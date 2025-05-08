@@ -1,0 +1,16 @@
+.whiteboard {
+  background-color: grey;
+  overflow: auto;
+  width: 100vw;
+  height: 100vh;
+  border: 1px solid #ccc;
+}
+
+.canvas {
+  margin: 1em;
+  background-color: rgb(72, 72, 72);
+  width: 2000px;
+  height: 2000px;
+  position: relative;
+  overflow: hidden; 
+}
