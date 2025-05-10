@@ -55,8 +55,6 @@ export default function Timer() {
     // Restart the timer with the new expiry time
     restart(futureTime);
     console.log('Timer reset to:', futureTime);
-
-    setTimerEnd(false); // Reset timer end state
   }
 
   // reset timer to maxTime
@@ -65,7 +63,6 @@ export default function Timer() {
     futureTime.setSeconds(futureTime.getSeconds() + maxTime);
     setTimer(futureTime);
     restart(futureTime);
-    setTimerEnd(false); // Reset timer end state
   }
 
   // Calculate the remaining time in seconds
