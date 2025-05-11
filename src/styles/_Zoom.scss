@@ -1,0 +1,21 @@
+
+.tools {
+    padding : 0.5em;
+    justify-self: flex-end;
+    display: flex;
+
+    button {
+        margin-left: 0.2em;
+        margin-right: 0.2em;
+        height : 2em;
+        width: 2em;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #f0f0f0;
+    }
+
+
+}
+

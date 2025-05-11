@@ -1,6 +1,8 @@
 @use 'Timer';
 @use 'Whiteboard';
 @use 'CenterModal';
+@use 'Zoom';
+@use 'SideDropper';
 
 /* Minimal nCSS Reset */
 * {
@@ -28,9 +30,10 @@
     }
     
     body {
-      background-color: #fff;
+      background-color: #4d4d4d;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      overflow: hidden;
     }
     
     

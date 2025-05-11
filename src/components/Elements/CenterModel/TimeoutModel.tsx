@@ -1,3 +1,4 @@
+import {motion} from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useTimeoutModal } from "./CenterModelContext";
 
@@ -26,9 +27,10 @@ export default function TimeoutModel() {
   if (!showModal) return null;
 
   return (
-    <div className="center-modal">
+    <motion.div className="center-modal" drag dragMomentum={false}
+>
       <p> Timer Ended!</p>
       <button onClick={handleClose}>Close</button>
-    </div>
+    </motion.div>
   );
 }
