@@ -7,11 +7,12 @@ import './styles/main.css';
 
 // components :
 import Whiteboard from "./components/Elements/Whiteboard/Whiteboard";
-
+import SideDropper from "./components/Elements/SideDropper/SideDropper";
 function App() {
 
   return (
     <>
+    <SideDropper />
       <ModalProvider>
         <>
           <TimeoutModel /> {/* ⬅️ will only render if context is triggered */}
