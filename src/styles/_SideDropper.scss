@@ -1,6 +1,4 @@
-
-/* Pannel Styling */
-
+/* Panel Styling */
 
 .side-dropper-container {
   z-index: 1000;
@@ -14,7 +12,7 @@
   justify-items: flex-start;
 
   .side-dropper-header {
-    width : 100%;
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr auto;
     justify-items: center;
@@ -34,36 +32,125 @@
   .side-dropper-content {
     height: 100%;
     width: 100%;
-    display : block;
+    display: block;
     background-color: rgb(230, 25, 25);
+  }
+
+  /* collapsed state */
+  &.active {
+    .side-dropper-header {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .side-dropper-content {
+      display: block;
+    }
+
+    .close-icon {
+      margin-left: 5em;
+    }
+  }
+
+  &:not(.active) {
+    .side-dropper-header {
+      grid-template-columns: 1fr;
+    }
+
+    .side-dropper-content {
+      display: none;
+    }
+
+    .close-icon {
+      margin-left: 0;
+    }
+  }
+}
+
+/* Item Grid Styling */
+
+.drop-item-list-container {
+  height: 90%;
+  display: grid;
+  margin: 1em;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-y: scroll;
+
+  .drop-list-child {
+    cursor: pointer;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    align-items: flex-end;
+    justify-items: center;
+
+    p {
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .placeholder-image {
+      background-color: black;
+      width: 5em;
+      height: 5em;
+    }
+  }
+}
+
+
+
+@media (max-width: 450px) {
+
+  .Drag-Preview {
+    transform: translate(0%, 0%);
+  }
+
+  .side-dropper-container {
+    height : auto;
+    top : 0;
+    left: 0;
+    right: 0;
+
+    .side-dropper-header {
+      width : 2em;
+      justify-self: center;
+    }
+  }
+
+  .drop-item-list-container {
+    grid-template-columns: 1fr;
+    height : 30vh;
+    overflow-x: hidden;
+  }
+
+  .side-dropper-container.active {
+    align-items: first baseline;
+  .side-dropper-header {
+    font-size: 0.8em;
+    width : 100%;
+    display : grid;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    align-items: center;
+    justify-content: space-around;
+
+
+    .close-icon {
+      justify-self: flex-end;
+      margin : 0;
+      margin-right: 1em;
+    };
+  }
+
+  .side-dropper-content {
+    height : 35vh;
+    background: none; /* Delete Debugging */
+
+
 
   }
 
 
 }
-
-// Item Grid style
-
-.drop-item-list-container {
-    display : grid;
-    margin : 1em;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-
-    div {
-
-    .placeholder-image {
-        color : black;
-        width: 10px;
-        height : 10px;
-    }
-
-
-    }
-
-
-
 }

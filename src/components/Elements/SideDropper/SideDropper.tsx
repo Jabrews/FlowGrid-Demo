@@ -1,54 +1,21 @@
-import { useState} from 'react';
-
-
-// components
-import DroppableItemList from '../SideDropper/DroppableItemList'
-
+import { useState } from 'react';
+import DroppableItemList from '../SideDropper/DroppableItemList';
 
 export default function SideDropper() {
+  const [sideOpen, setSideOpen] = useState(true);
 
-    // icon open/close logic 
-    const [sideOpen, setSideOpen] = useState(true);
-
-
-    return (
-        <div className='side-dropper-container'> 
-            <div className='side-dropper-header'
-            style={{
-            gridTemplateColumns: sideOpen ? '1fr 1fr' : '1fr'
-            }}
-            >
-                <h2>
-                    {sideOpen == true ? 'Side Dropper' : '' } 
-                </h2>
-                {/* Icon */}
-                <h2 className='close-icon'
-                onClick={() => {
-                    setSideOpen(!sideOpen);
-                }}
-                style={{
-                marginLeft: sideOpen ? '5em' : '0em'
-                }}
-                > 
-                {sideOpen == true ? 'X' : 'O' } 
-                </h2>
-            </div>
-
-            <div 
-            className='side-dropper-content'
-            style={{
-                display : sideOpen ? 'block' : 'none'
-            }}
-            > 
-
-            <DroppableItemList />
-        
-        
-
-            </div>
-
-        </div>
-    )
-
-
+  return (
+    <div className={`side-dropper-container ${sideOpen ? 'active' : ''}`}
+    >
+      <div className="side-dropper-header">
+        <h2>{sideOpen ? 'Side Dropper' : ''}</h2>
+        <h2 className="close-icon" onClick={() => setSideOpen(!sideOpen)}>
+          {sideOpen ? 'X' : 'O'}
+        </h2>
+      </div>
+      <div className="side-dropper-content">
+        <DroppableItemList />
+      </div>
+    </div>
+  );
 }

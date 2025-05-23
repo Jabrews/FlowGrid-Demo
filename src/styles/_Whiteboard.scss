@@ -2,14 +2,11 @@
   background-color: grey;
   width: 100%;
   height: 100vh;
-
   border: 1px solid #ccc;
   overflow: scroll;
 
   .whiteboard-item {
     margin : 0.5em;
-
-
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -26,7 +23,27 @@
 
 }
 
-.drag-handle {
+
+.item-header {
+  user-select: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* ✅ creates space between children */
+  align-items: flex-end;
+  width: 100%; /* ✅ ensures full horizontal spacing */
+
+  .delete-handle {
+    
+    cursor : pointer
+  }
+
+  .drag-handle {
+  cursor: pointer;
   width: 200%;
 }
+
+
+
+}
+
 

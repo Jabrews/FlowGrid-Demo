@@ -2,7 +2,7 @@ import { useTimer } from 'react-timer-hook';
 import { useState } from 'react';
 import ProgressBar from './ProgressBar';
 // Timeout model context
-import { useTimeoutModal } from '../CenterModel/CenterModelContext';
+import { useTimeoutModal } from '../TimeoutModel/TimeoutModelContext';
 
 export default function Timer() {
   const startingTime = new Date();
@@ -23,8 +23,6 @@ export default function Timer() {
     seconds,
     minutes,
     hours,
-    isRunning,
-    start,
     pause,
     resume,
     restart,
