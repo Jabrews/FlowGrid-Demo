@@ -4,7 +4,8 @@ import GridLayout from 'react-grid-layout';
 import type {Layout} from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import Timer from '../Timer/Timer';
-import { useDroppable } from '@dnd-kit/core';
+import { useDroppable } from '@dnd-kit/core'
+
 
 // delete element model
 import { useDeleteModal } from '../DeleteElementModel/DeleteElementModelContext';
@@ -22,6 +23,24 @@ type WhiteboardProps = {
 };
 
 export default function Whiteboard({ droppedItems, setDroppedItems }: WhiteboardProps) {
+
+  // Grid reponsivness 
+const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setGridMargin([50, 100]);
+      } else {
+        setGridMargin([80, 120]);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize(); // initial check
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
   const { setNodeRef } = useDroppable({ id: 'droppable-1' });
     const { open } = useDeleteModal(); // Access the modal context
 
@@ -45,24 +64,30 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
   }, [droppedItems]);
 
   return (
-    <div className="whiteboard" style={{ width: '100%', height: '100vh', overflow: 'scroll' }}>
+    <div className="whiteboard" style={{ width: '100%', height: '100vh', overflow: 'scroll', background: 'black'}}>
       <div
         ref={setNodeRef}
         style={{
-          width: '100%',
-          height: '100%',
+          margin : '0.5em',
+          display: 'inline-block',
+          width: '2000px',
+          height: '2000px',
+          background: 'grey',
         }}
         className="droppable-div"
       >
         <GridLayout
           layout={layout}
+          compactType={null} // disables auto-compacting
           cols={24}
-          rowHeight={100}
+          rowHeight={50}
           width={2000}
-          margin={[100, 150]}
-          preventCollision={false}
+          margin={gridMargin}
+          preventCollision={true}
           draggableHandle=".drag-handle"
           isResizable={false}
+          useCSSTransforms={false}
+          onLayoutChange={setLayout}
         >
           {droppedItems.map((item) => (
             <div key={item.id} className="whiteboard-item">

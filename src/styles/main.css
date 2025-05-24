@@ -131,6 +131,7 @@
 }
 .center-modal button {
   color: red;
+  padding: 1em;
 }
 
 .tools {
@@ -171,6 +172,7 @@
   background-color: rgb(148, 20, 20);
 }
 .side-dropper-container .side-dropper-header .close-icon {
+  padding: 0.3em;
   margin-left: 5em;
   cursor: pointer;
 }
@@ -182,6 +184,7 @@
   width: 100%;
   display: block;
   background-color: rgb(230, 25, 25);
+  overflow-x: hidden;
 }
 .side-dropper-container.active .side-dropper-header {
   grid-template-columns: 1fr 1fr;
@@ -212,6 +215,7 @@
   justify-content: center;
   text-align: center;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 .drop-item-list-container .drop-list-child {
   cursor: pointer;
@@ -268,7 +272,7 @@
   }
   .side-dropper-container.active .side-dropper-content {
     height: 35vh;
-    background: none; /* Delete Debugging */
+    background: rgba(255, 0, 0, 0.356); /* Delete Debugging */
   }
 }
 /* Minimal nCSS Reset */
@@ -282,7 +286,7 @@ html {
   font-size: 16px;
   font-family: "Inter", sans-serif;
   line-height: 1.5;
-  color: #222;
+  color: #0e0e0e;
 }
 
 a {

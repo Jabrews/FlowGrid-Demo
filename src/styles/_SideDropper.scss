@@ -20,6 +20,7 @@
     background-color: rgb(148, 20, 20);
 
     .close-icon {
+      padding : 0.3em;
       margin-left: 5em;
       cursor: pointer;
     }
@@ -34,6 +35,8 @@
     width: 100%;
     display: block;
     background-color: rgb(230, 25, 25);
+    overflow-x: hidden;
+
   }
 
   /* collapsed state */
@@ -77,6 +80,7 @@
   justify-content: center;
   text-align: center;
   overflow-y: scroll;
+  overflow-x: hidden;
 
   .drop-list-child {
     cursor: pointer;
@@ -145,7 +149,7 @@
 
   .side-dropper-content {
     height : 35vh;
-    background: none; /* Delete Debugging */
+    background: rgba(255, 0, 0, 0.356); /* Delete Debugging */
 
 
 

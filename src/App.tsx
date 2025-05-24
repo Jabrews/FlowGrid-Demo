@@ -58,6 +58,7 @@ export default function App() {
           // called when dragging ends (drop or cancel)
           onDragEnd={({ over, active }) => {
             console.log('ended drag : ', active.id);
+            // if over whiteboard
             if (over?.id === 'droppable-1') {
               const type = active.data?.current?.type || String(active.id);
               const uniqueId = `${type}-${Date.now()}`;
@@ -71,6 +72,13 @@ export default function App() {
                 }
               ]);
             }
+
+            // if over side dropper
+            else if (over?.id === 'droppable-2') {
+              setActiveId(null);
+            }
+
+
             console.log('app dropped items :', droppedItems)
             setActiveId(null);
           }}
