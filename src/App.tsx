@@ -20,6 +20,13 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 
+
+// tracker context 
+//import ConnectionFactoryContext from './components/Elements/TrackerContext/ConnectionFactoryContext';
+import { useContext } from 'react';
+import { TrackablePairContext } from './components/Elements/TrackerContext/TrackablePairContext';
+
+
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import DragPreview from './components/Elements/SideDropper/DragPreview';
 
@@ -41,7 +48,11 @@ export default function App() {
     useSensor(MouseSensor),
   );
 
+  const addConnectedElement = useContext(TrackablePairContext);
+
+
   return (
+  
     <DeleteModalProvider>
     <ModalProvider>
       <>
@@ -67,6 +78,8 @@ export default function App() {
             // set type          
             setActiveType(type)  
           }}
+
+          
 
           // called when dragging ends (drop or cancel)
           onDragEnd={({ over, active }) => {
@@ -99,19 +112,22 @@ export default function App() {
 
 
           // if tracker inout dropped over tracker output 
-          else if (over?.data.current?.type == 'tracker-output') {
+          if (over?.data.current?.type == 'tracker-output') {
+              
+            if (addConnectedElement) {
 
-            // get tracker-input and its parent object (both should have special ids)
-            console.log('DEBUG trackerInput id : ', active.id)
-            console.log('DEBUG parentInput id : ', active)
-            // get tracker-output and its parent object (both should have special ids)
-            console.log('DEBUG trackerOutput id : ', over.id)
-            console.log('DEBUG parentOutput id : ', over.data.current.parentElementId)
-            
+                addConnectedElement(
+                  {
+                  input: String(active.id),
+                  output: String(over.id),
+                  inputParent: String(active),
+                  outputParent: String(over?.data.current?.parentElementId),
+                  }
+              )
+            }
+            }      
 
-            console.log('DEBUG Dropped Items : ', droppedItems)
           
-          }
 
           
 
@@ -123,9 +139,6 @@ export default function App() {
           }
 
 
-          // log current state of dropped items (note: may show stale data due to async state)
-          console.log('app dropped items :', droppedItems);
-
           // clear the active id to end drag preview
           setActiveId(null);
         }}
@@ -135,6 +148,7 @@ export default function App() {
             setActiveType(null);
           }}        
           >
+
 
 
           <Whiteboard droppedItems={droppedItems} setDroppedItems={setDroppedItems} />

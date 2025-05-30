@@ -3,14 +3,19 @@ import type { JSX } from 'react';
 import GridLayout from 'react-grid-layout';
 import type {Layout} from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
+import { useDroppable } from '@dnd-kit/core'
+
+// timer
 import Timer from '../Timer/Timer';
 
 // tracker
 import Tracker from '../Tracker/Tracker'
 import TrackerOutput from '../Tracker/TrackerOutput';
-import TrackerInput from '../Tracker/TrackerInput';
+import TrackerInput from '../Tracker/TrackerInput'
 
-import { useDroppable } from '@dnd-kit/core'
+// tracker context
+// import { TrackablePairContext } from '../TrackerContext/TrackablePairContext';
+// import { useContext } from 'react';
 
 // delete element model
 import { useDeleteModal } from '../DeleteElementModel/DeleteElementModelContext';
@@ -28,6 +33,9 @@ type WhiteboardProps = {
 };
 
 export default function Whiteboard({ droppedItems, setDroppedItems }: WhiteboardProps) {
+
+
+
 
   // Grid reponsivness 
   const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
@@ -81,49 +89,49 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
         }}
         className="droppable-div"
       >
-        <GridLayout
-          layout={layout}
-          compactType={null}
-          cols={24}
-          rowHeight={50}
-          width={2000}
-          margin={gridMargin}
-          preventCollision={true}
-          draggableHandle=".drag-handle"
-          isResizable={false}
-          useCSSTransforms={false}
-          onLayoutChange={setLayout}
-        >
-          {droppedItems.map((item) => (
-            <div key={item.id} className="whiteboard-item">
-              <div className="item-header">
-                <div className="drag-handle">::</div>
-                <div
-                  className="delete-handle"
-                  onClick={() =>
-                    open(item.id, () => {
-                      setDroppedItems((prev) => prev.filter((e) => e.id !== item.id));
-                    })
-                  }
-                >
-                  X
+          <GridLayout
+            layout={layout}
+            compactType={null}
+            cols={24}
+            rowHeight={50}
+            width={2000}
+            margin={gridMargin}
+            preventCollision={true}
+            draggableHandle=".drag-handle"
+            isResizable={false}
+            useCSSTransforms={false}
+            onLayoutChange={setLayout}
+          >
+            {droppedItems.map((item) => (
+              <div key={item.id} className="whiteboard-item">
+                <div className="item-header">
+                  <div className="drag-handle">::</div>
+                  <div
+                    className="delete-handle"
+                    onClick={() =>
+                      open(item.id, () => {
+                        setDroppedItems((prev) => prev.filter((e) => e.id !== item.id));
+                      })
+                    }
+                  >
+                    X
+                  </div>
                 </div>
-              </div>
-              {componentMap[item.type] || <p>Unknown component</p>}
+                {componentMap[item.type] || <p>Unknown component</p>}
 
-              {/* Only trackable items get the Input/Output */}
-              {item.trackable && (
-                <TrackerOutput parentElementId={item.id} id={`tracker-output-${Date.now()}`} type={'tracker-output'} />
-              )}
-              
-              {/* Only tracker gets tracker input*/}
-              {item.tracker && (
-                <TrackerInput parentElementId={item.id} id={`tracker-input-${Date.now()}`} type={'tracker-input'} />
+                {/* Only trackable items get the Input/Output */}
+                {item.trackable && (
+                  <TrackerOutput parentElementId={item.id} id={`tracker-output-${Date.now()}`} type={'tracker-output'} />
                 )}
+                
+                {/* Only tracker gets tracker input*/}
+                {item.tracker && (
+                  <TrackerInput parentElementId={item.id} id={`tracker-input-${Date.now()}`} type={'tracker-input'} />
+                  )}
 
-            </div>
-          ))}
-        </GridLayout>
+              </div>
+            ))}
+          </GridLayout>
       </div>
     </div>
   );
