@@ -1,0 +1,96 @@
+
+
+
+.tracker-container {
+
+    width : 20em;
+    display:  grid;
+    grid-template-rows: 1fr 4fr;
+
+
+    .tracker-header {
+        padding: 1em;
+        display : flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: rgb(66, 66, 66);
+
+        button {
+            cursor: pointer;
+            border : none;
+            padding: 0.1em;
+            border-radius: 1em;
+            color : black;
+            font-weight: 900;
+            background-color: white;
+            font-size: 2em;
+
+            &:hover {
+                background-color: darken(white, 10%);
+            }
+        }
+
+
+
+
+    }
+
+
+
+
+    .tracker-body {
+        align-items: center;
+        justify-items: center;
+        display : flex;
+        background-color: rgb(97, 97, 97);
+    }
+
+}
+
+
+/* INPUT */
+
+
+
+    .tracker-input {
+    padding: 1em;
+    width: 100%;
+    display : flex;
+    gap: 1em;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+    background-color: rgb(109, 109, 109);
+
+        p {
+            font-size : 0.7em;
+        }
+
+    }
+
+
+
+
+
+
+
+/* OUTPUT */
+
+
+.tracker-output {
+    padding: 1em;
+    width : max-content;
+    display : grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1em;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+    background-color: rgb(109, 109, 109);
+
+
+    p {
+        font-size : 0.7em;
+    }
+
+}

@@ -2,13 +2,14 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 export type DraggableItemProps = {
-  id: string;
+  id : string
+  type : string
 };
 
-export default function DraggableItem({ id }: DraggableItemProps) {
+export default function DraggableItem({ id , type}: DraggableItemProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
-    data: { type: id }, // allows tracking type during drop
+    data: { type: type}, // allows tracking type during drop
   });
 
   const style = {
@@ -21,9 +22,7 @@ export default function DraggableItem({ id }: DraggableItemProps) {
       <div className="drop-list-child">
         <div className="drag-handle" 
         {...listeners} {...attributes}
-        onPointerDown={(e) => {
-        console.log('🖱 Pointer down', e);
-  }}
+
         >
           ::
         </div>

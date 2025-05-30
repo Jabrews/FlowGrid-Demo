@@ -275,6 +275,178 @@
     background: rgba(255, 0, 0, 0.356); /* Delete Debugging */
   }
 }
+.tracker-container {
+  width: 20em;
+  display: grid;
+  grid-template-rows: 1fr 4fr;
+}
+.tracker-container .tracker-header {
+  padding: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(66, 66, 66);
+}
+.tracker-container .tracker-header button {
+  cursor: pointer;
+  border: none;
+  padding: 0.1em;
+  border-radius: 1em;
+  color: black;
+  font-weight: 900;
+  background-color: white;
+  font-size: 2em;
+}
+.tracker-container .tracker-header button:hover {
+  background-color: rgb(229.5, 229.5, 229.5);
+}
+.tracker-container .tracker-body {
+  align-items: center;
+  justify-items: center;
+  display: flex;
+  background-color: rgb(97, 97, 97);
+}
+
+/* INPUT */
+.tracker-input {
+  padding: 1em;
+  width: 100%;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  background-color: rgb(109, 109, 109);
+}
+.tracker-input p {
+  font-size: 0.7em;
+}
+
+/* OUTPUT */
+.tracker-output {
+  padding: 1em;
+  width: max-content;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1em;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  background-color: rgb(109, 109, 109);
+}
+.tracker-output p {
+  font-size: 0.7em;
+}
+
+/* TRACKER MENU BASE STYLING (ALL COMPONENTS HAVE THIS)*/
+.tracker-menu-container {
+  width: 95;
+  background-color: rgb(83, 83, 83);
+  display: grid;
+  grid-template-rows: 1fr 3fr;
+  align-items: center;
+  justify-items: center;
+}
+.tracker-menu-container .tracker-menu-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.tracker-menu-container .tracker-menu-header p {
+  font-size: 0.7em;
+}
+.tracker-menu-container .tracker-menu-content {
+  display: grid;
+  height: 95%;
+  width: 95%;
+  background-color: rgb(172, 172, 172);
+  /* MIGHT CAUSE STYLING PROBLEMS */
+}
+.tracker-menu-container .tracker-menu-content .timer-menu-item {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+}
+.tracker-menu-container .tracker-menu-content .timer-menu-item .timer-menu-delete-btn {
+  align-self: center;
+  justify-self: center;
+  background: none;
+  border: none;
+  margin-left: 0.3em;
+  color: red;
+}
+
+/* Timer Tracker Menu */
+/* Only Needs to account for Dropdown-Counters*/
+.timer-menu-container {
+  display: grid;
+  grid-template-rows: auto;
+  gap: 0;
+  padding: 4px;
+  align-items: start;
+  justify-items: center;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.timer-menu-container .add-btn {
+  justify-self: baseline;
+  border: none;
+  cursor: pointer;
+  border-radius: 1em;
+  padding: 0.2em;
+  background-color: gray;
+  font-size: 1.5em;
+}
+.timer-menu-container .add-btn:hover {
+  background-color: rgb(112, 112, 112);
+}
+
+/* DropDownCounter */
+.drop-down-counter-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 3fr;
+  gap: 0.5em;
+}
+
+.drop-down-label {
+  font-size: 1em;
+}
+
+.drop-down-input {
+  width: 100%;
+}
+
+.drop-down-menu-container {
+  position: relative;
+}
+.drop-down-menu-container .drop-down-btn {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 1.3em;
+  cursor: pointer;
+}
+.drop-down-menu-container .drop-down-menu {
+  word-wrap: normal;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.drop-down-menu-container .drop-down-menu .drop-down-item {
+  color: black;
+  border: 1px solid black;
+}
+.drop-down-menu-container .drop-down-menu .drop-down-item:hover {
+  background-color: rgb(185, 185, 185);
+}
+
 /* Minimal nCSS Reset */
 * {
   margin: 0;

@@ -4,35 +4,40 @@ import GridLayout from 'react-grid-layout';
 import type {Layout} from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import Timer from '../Timer/Timer';
-import { useDroppable } from '@dnd-kit/core'
 
+// tracker
+import Tracker from '../Tracker/Tracker'
+import TrackerOutput from '../Tracker/TrackerOutput';
+import TrackerInput from '../Tracker/TrackerInput';
+
+import { useDroppable } from '@dnd-kit/core'
 
 // delete element model
 import { useDeleteModal } from '../DeleteElementModel/DeleteElementModelContext';
 
 export type DroppedItem = {
   id: string;
-  content: string;
   type: string;
+  trackable : boolean;
+  tracker : boolean
 };
 
 type WhiteboardProps = {
   droppedItems: DroppedItem[];
   setDroppedItems: React.Dispatch<React.SetStateAction<DroppedItem[]>>;
-
 };
 
 export default function Whiteboard({ droppedItems, setDroppedItems }: WhiteboardProps) {
 
   // Grid reponsivness 
-const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
+  const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setGridMargin([50, 100]);
+        setGridMargin([50, 135]);
       } else {
-        setGridMargin([80, 120]);
+        setGridMargin([70, 155]);
       }
     };
     window.addEventListener('resize', handleResize);
@@ -40,12 +45,12 @@ const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
   const { setNodeRef } = useDroppable({ id: 'droppable-1' });
-    const { open } = useDeleteModal(); // Access the modal context
+  const { open } = useDeleteModal(); // Access the modal context
 
   const componentMap: Record<string, JSX.Element> = {
     Timer: <Timer />,
+    Tracker: <Tracker />,
     Chart: <div>Chart Component</div>,
     Note: <div>Note Component</div>,
   };
@@ -78,7 +83,7 @@ const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
       >
         <GridLayout
           layout={layout}
-          compactType={null} // disables auto-compacting
+          compactType={null}
           cols={24}
           rowHeight={50}
           width={2000}
@@ -100,12 +105,22 @@ const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
                       setDroppedItems((prev) => prev.filter((e) => e.id !== item.id));
                     })
                   }
-
                 >
                   X
                 </div>
               </div>
               {componentMap[item.type] || <p>Unknown component</p>}
+
+              {/* Only trackable items get the Input/Output */}
+              {item.trackable && (
+                <TrackerOutput parentElementId={item.id} id={`tracker-output-${Date.now()}`} type={'tracker-output'} />
+              )}
+              
+              {/* Only tracker gets tracker input*/}
+              {item.tracker && (
+                <TrackerInput parentElementId={item.id} id={`tracker-input-${Date.now()}`} type={'tracker-input'} />
+                )}
+
             </div>
           ))}
         </GridLayout>
