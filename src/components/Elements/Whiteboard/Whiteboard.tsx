@@ -14,8 +14,8 @@ import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput'
 
 // tracker context
-// import { TrackablePairContext } from '../TrackerContext/TrackablePairContext';
-// import { useContext } from 'react';
+import { useContext } from 'react';
+import { ConnectionFactoryProvider } from '../TrackerContext/ConnectionFactoryProvider';
 
 // delete element model
 import { useDeleteModal } from '../DeleteElementModel/DeleteElementModelContext';
@@ -32,9 +32,16 @@ type WhiteboardProps = {
   setDroppedItems: React.Dispatch<React.SetStateAction<DroppedItem[]>>;
 };
 
+
 export default function Whiteboard({ droppedItems, setDroppedItems }: WhiteboardProps) {
+  
+  const context = useContext(ConnectionFactoryProvider)
 
+  if (!context) {
+    throw Error('Cant find context in Whiteboard')
+  }
 
+  const {addConnectedElement, connectedElements} = context
 
 
   // Grid reponsivness 
@@ -127,7 +134,29 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
                 {/* Only tracker gets tracker input*/}
                 {item.tracker && (
                   <TrackerInput parentElementId={item.id} id={`tracker-input-${Date.now()}`} type={'tracker-input'} />
-                  )}
+                )}
+
+                {/* Check connected elemets for id's */}
+              {connectedElements
+                // filter connections where output matches this item
+                .filter(element =>
+                  element.outputParent === item.id &&
+                  // only keep if input is in droppedItems
+                  droppedItems.some(droppedItem => droppedItem.id === element.inputParent)
+                )
+                // render each matching connection
+                .map((element, index) => (
+                  <div key={index}>
+                    <p>
+                      Connected Output: {element.outputParent} — Connected Input: {element.inputParent}
+                    </p>
+                  </div>
+                ))
+              }
+
+
+
+
 
               </div>
             ))}

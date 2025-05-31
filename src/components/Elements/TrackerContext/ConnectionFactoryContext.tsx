@@ -1,6 +1,6 @@
-import  {useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { TrackablePairContext } from "./TrackablePairContext";
+import { ConnectionFactoryProvider } from "./ConnectionFactoryProvider";
 
 export type TrackablePair = {
     input: string;
@@ -18,18 +18,21 @@ export default function ConnectionFactoryContext({ children }: ConnectionFactory
         { input: 'example', output: 'example', inputParent: 'example', outputParent: 'example' }
     ]);
 
-    function addConnectedElements(newElement: TrackablePair) {
+    function addConnectedElement(newElement: TrackablePair) {
+        console.log('ADDING new element:', newElement);
         setConnectedElements((prev) => [
             ...prev,
             newElement
         ]);
+    }
 
-        console.log('Connection Factory elements: ', connectedElements)
-}
+    useEffect(() => {
+        console.log('UPDATED connectedElements:', connectedElements);
+    }, [connectedElements]);
 
     return (
-        <TrackablePairContext.Provider value={addConnectedElements}>
+        <ConnectionFactoryProvider.Provider value={{ addConnectedElement, connectedElements }}>
             {children}
-        </TrackablePairContext.Provider>
+        </ConnectionFactoryProvider.Provider>
     );
 }

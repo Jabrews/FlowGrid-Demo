@@ -13,14 +13,15 @@ export default function TrackerOutput({parentElementId, id, type} : TrackerOutpu
 
     const [activated, setActivated] = useState(false);
 
-const { setNodeRef } = useDroppable({
-  id: id, // real ID
-  data: {
-    type,
-    parentElementId,
-    isTrackerOutput: true,
-  },
-});
+    const { setNodeRef } = useDroppable({
+    id: id, // real ID
+    data: {
+        type,
+        parentElementId,
+        isTrackerOutput: true,
+    },
+    });
+
     return ( 
         <div className='tracker-output'
         ref={setNodeRef}
