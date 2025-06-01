@@ -93,7 +93,8 @@ export default function App() {
             id: `${activeType}-${Date.now()}-${Math.floor(Math.random() * 10000)}`,         
             type: String(activeType),
             trackable: trackableItems.includes(String(activeType)),
-            tracker: activeType === 'Tracker' ? true : false
+            tracker: activeType === 'Tracker' ? true : false,
+            currently_tracked: false // set by default 
           }
         ]);
       }

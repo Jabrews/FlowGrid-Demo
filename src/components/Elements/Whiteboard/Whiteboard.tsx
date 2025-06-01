@@ -25,6 +25,7 @@ export type DroppedItem = {
   type: string;
   trackable : boolean;
   tracker : boolean
+  currently_tracked : boolean;
 };
 
 type WhiteboardProps = {
@@ -34,8 +35,12 @@ type WhiteboardProps = {
 
 
 export default function Whiteboard({ droppedItems, setDroppedItems }: WhiteboardProps) {
-  
+
+  // elements rendered in dom together 
+  const [wrappedElements, setWrappedElements] = useState([{droppedItems}])
+
   const context = useContext(ConnectionFactoryProvider)
+
 
   if (!context) {
     throw Error('Cant find context in Whiteboard')
@@ -83,6 +88,29 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
     setLayout(newLayout);
   }, [droppedItems]);
 
+  {/* Check connected elemets for id's */}
+  useEffect(() => {
+  setDroppedItems(prev =>
+  prev.map(item => {
+  // Output tracker: is tracked if any connection uses this as outputParent and the inputParent exists
+  const isOutputTracked = connectedElements.some(
+  element =>
+  element.outputParent === item.id &&
+  prev.some(droppedItem => droppedItem.id === element.inputParent)
+  );
+  // Input tracker: is tracked if any connection uses this as inputParent and the outputParent exists
+  const isInputTracked = connectedElements.some(
+  element =>
+  element.inputParent === item.id &&
+  prev.some(droppedItem => droppedItem.id === element.outputParent)
+  );
+  // Set currently_tracked to true if either is true
+  const isTracked = isOutputTracked || isInputTracked;
+  return { ...item, currently_tracked: isTracked };
+  })
+  );
+  }, [connectedElements, setDroppedItems]);
+
   return (
     <div className="whiteboard" style={{ width: '100%', height: '100vh', overflow: 'scroll', background: 'black'}}>
       <div
@@ -109,7 +137,9 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
             useCSSTransforms={false}
             onLayoutChange={setLayout}
           >
-            {droppedItems.map((item) => (
+          {droppedItems.map((item) => {
+
+            return (
               <div key={item.id} className="whiteboard-item">
                 <div className="item-header">
                   <div className="drag-handle">::</div>
@@ -124,42 +154,22 @@ export default function Whiteboard({ droppedItems, setDroppedItems }: Whiteboard
                     X
                   </div>
                 </div>
+                
+
                 {componentMap[item.type] || <p>Unknown component</p>}
 
                 {/* Only trackable items get the Input/Output */}
                 {item.trackable && (
                   <TrackerOutput parentElementId={item.id} id={`tracker-output-${Date.now()}`} type={'tracker-output'} />
                 )}
-                
-                {/* Only tracker gets tracker input*/}
+
+                {/* Only tracker gets tracker input */}
                 {item.tracker && (
                   <TrackerInput parentElementId={item.id} id={`tracker-input-${Date.now()}`} type={'tracker-input'} />
                 )}
-
-                {/* Check connected elemets for id's */}
-              {connectedElements
-                // filter connections where output matches this item
-                .filter(element =>
-                  element.outputParent === item.id &&
-                  // only keep if input is in droppedItems
-                  droppedItems.some(droppedItem => droppedItem.id === element.inputParent)
-                )
-                // render each matching connection
-                .map((element, index) => (
-                  <div key={index}>
-                    <p>
-                      Connected Output: {element.outputParent} — Connected Input: {element.inputParent}
-                    </p>
-                  </div>
-                ))
-              }
-
-
-
-
-
               </div>
-            ))}
+            );
+          })}
           </GridLayout>
       </div>
     </div>
