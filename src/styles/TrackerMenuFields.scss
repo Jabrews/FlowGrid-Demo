@@ -1,0 +1,57 @@
+
+
+/* DropDownCounter */
+
+.drop-down-counter-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr;
+    gap: 0.5em;
+}
+
+
+
+    .drop-down-label {
+        font-size: 1em;
+    }
+
+    .drop-down-input {
+        width: 100%;
+    }
+
+    .drop-down-menu-container {
+        position: relative;
+    
+
+        .drop-down-btn {
+        position: relative;
+        background: none;
+        border: none;
+        font-size: 1.3em;
+        cursor: pointer;
+        }
+
+        .drop-down-menu {
+            word-wrap: normal;
+            position: absolute;
+            top: 100%; 
+            left: 0;
+            margin-top: 4px;
+            z-index: 1000; 
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+            .drop-down-item {
+                color: black;
+                border: 1px solid black;
+                
+                &:hover {
+                    background-color: rgb(185, 185, 185);
+                }
+            }
+        }
+    }
+
+
