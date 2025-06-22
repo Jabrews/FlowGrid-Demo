@@ -2,124 +2,118 @@ import { createContext, useContext } from "react";
 import { create } from "zustand";
 
 import type { DroppedItem } from "../ItemFactory/ItemFactoryContext";
-
-// itemFactory 
 import { useItemFactoryContext } from "../ItemFactory/ItemFactoryContext";
 
-// leader line 
-import { useConnectionLinesContext } from "../ConnectionLines";
-
-// tracker menus
+import type { connectedMenuItem } from "../TrackerMenusContext/TimerMenuContext";
 import { useTimerMenuContext } from "../TrackerMenusContext/TimerMenuContext";
-import type {connectedMenuItem} from "../TrackerMenusContext/TimerMenuContext";
-import { i, line } from "framer-motion/client";
-let droppedItems : DroppedItem[] = [];
-let addTimeTrackerItem : (pairObject: connectedMenuItem) => void;
-let addConnectionLine : (trackerId : string, itemId : string) => void;
 
+// type
 export type PairObject = {
-    trackerId: string;
-    itemId: string;
-    type: string;
-    };
-
-
+  trackerId: string;
+  itemId: string;
+  type: string;
+};
 
 // store factory
-const createPairFactoryStore = () =>
-create((set, get) => ({
-  connectedItems: [],
-  connectedTracker: null,
-  addConnectedTracker: (trackerId: string) =>
-    set((state: any) => {
-      const item = droppedItems.find(
-        (item) => item.id === trackerId && item.tracker === true
-      ); // make sure is tracker bool
-      return {
-        connectedTracker: item ? item : state.connectedTracker,
-      };
-    }),
-  connectedItem: null,
-  addConnectedItem: (itemId: string) =>
-    set((state: any) => {
-      const item = droppedItems.find((item) => item.id === itemId && item.trackable === true); // make sure is trackable bool
-      return {
-        connectedItem: item ? item : state.connectedItem,
-      };
-    }),
-  createPair: () => set((state) => {
-    if (!state.connectedItem || !state.connectedTracker) {
-        console.log("Cannot create pair: missing connectedItem or connectedTracker.");
-        return state; // no change
-    }
+const createPairFactoryStore = (
+  getDroppedItems: () => DroppedItem[],
+  addTimeTrackerItem: (pairObject: connectedMenuItem) => void
+) =>
+  create((set, get) => ({
+    connectedItems: [],
+    connectedTracker: null,
+    connectedItem: null,
 
-    const item = state.connectedItem;
-    const tracker = state.connectedTracker;
-
-  if (item.connected === true) {
-      const alreadyConnected = state.connectedItems.some((pair) => 
-          pair.tracker.id === state.connectedTracker.id && 
-          pair.item.id === state.connectedItem.id
-      );
-
-      if (alreadyConnected) {
-        console.log('tracker already has connection :', state.connectedTracker.id)
-          return state;
-      }
-  }
-    
-
-    item.connected = true;
-    tracker.connected = true;
-
-    if (item.type === "Timer") {
-      addTimeTrackerItem({
-        type : 'TimerPair',
-        pairId : `TimerPair-${Date.now()}`,
-        tracker,
-        item,
-        fields: {
-          increment: 0, 
-        }
-      })
-    }
-
-    addConnectionLine(item.id, tracker.id) 
-
-    return {
-        ...state,
-        connectedItems: [
-            ...state.connectedItems,
-            {
-                tracker,
-                item,
-            }
-        ]
+    addConnectedTracker: (trackerId: string) =>
+      set((state: any) => {
+        const droppedItems = getDroppedItems();
+        const item = droppedItems.find(
+          (item) => item.id === trackerId && item.tracker === true
+        );
+        return {
+          connectedTracker: item || state.connectedTracker,
         };
-    }),
-   removeConnectedItem : (itemId : string) => set((state) => ({
-        connectedItems : state.connectedItems.filter((pair) => pair.item.id !== itemId)
-    }))
+      }),
 
-}));
+    addConnectedItem: (itemId: string) =>
+      set((state: any) => {
+        const droppedItems = getDroppedItems();
+        const item = droppedItems.find(
+          (item) => item.id === itemId && item.trackable === true
+        );
+        return {
+          connectedItem: item || state.connectedItem,
+        };
+      }),
+
+    createPair: () =>
+      set((state) => {
+        const { connectedItem, connectedTracker, connectedItems } = state;
+
+        if (!connectedItem || !connectedTracker) {
+          console.log("Cannot create pair: missing connectedItem or connectedTracker.");
+          return state;
+        }
+
+        if (connectedItem.connected) {
+          const alreadyConnected = connectedItems.some(
+            (pair) =>
+              pair.tracker.id === connectedTracker.id &&
+              pair.item.id === connectedItem.id
+          );
+          if (alreadyConnected) {
+            console.log("tracker already has connection:", connectedTracker.id);
+            return state;
+          }
+        }
+
+        connectedItem.connected = true;
+        connectedTracker.connected = true;
+
+        if (connectedItem.type === "Timer") {
+          addTimeTrackerItem({
+            type: "TimerPair",
+            pairId: `TimerPair-${Date.now()}`,
+            tracker: connectedTracker,
+            item: connectedItem,
+            fields: {
+              increment: 0,
+            },
+          });
+        }
+
+        return {
+          ...state,
+          connectedItems: [
+            ...connectedItems,
+            {
+              tracker: connectedTracker,
+              item: connectedItem,
+            },
+          ],
+        };
+      }),
+
+    removeConnectedItem: (itemId: string) =>
+      set((state) => ({
+        connectedItems: state.connectedItems.filter(
+          (pair) => pair.item.id !== itemId
+        ),
+      })),
+  }));
 
 // context
-const pairFactoryContext = createContext(null);
+const pairFactoryContext = createContext<ReturnType<typeof createPairFactoryStore> | null>(null);
 
 // provider
-export const PairFactoryyProvider = ({ children }) => {
-    // let context access item factory stuff
-    const itemStore = useItemFactoryContext();
-    droppedItems = itemStore((state) => state.droppedItems);
-    // let context access timer menu stuff
-    const timerMenuStore = useTimerMenuContext();
-    addTimeTrackerItem = timerMenuStore((state) => state.addTimeTrackerItem);
-    // let context acess line connection menu
-    const lineConnectionStore = useConnectionLinesContext()
-    addConnectionLine = lineConnectionStore((state) => state.addConnectionLine)
+export const PairFactoryyProvider = ({ children }: { children: React.ReactNode }) => {
+  const itemStore = useItemFactoryContext();
+  const timerMenuStore = useTimerMenuContext();
 
+  const getDroppedItems = () => itemStore.getState().droppedItems;
+  const addTimeTrackerItem = timerMenuStore.getState().addTimeTrackerItem;
 
-    const store = createPairFactoryStore();
+  const store = createPairFactoryStore(getDroppedItems, addTimeTrackerItem);
 
   return (
     <pairFactoryContext.Provider value={store}>

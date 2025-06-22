@@ -73,7 +73,6 @@ export default function Timer({id} : TimerProps) {
 
     // Restart the timer with the new expiry time
     restart(futureTime);
-    console.log('Timer reset to:', futureTime);
   }
 
   // reset timer to maxTime

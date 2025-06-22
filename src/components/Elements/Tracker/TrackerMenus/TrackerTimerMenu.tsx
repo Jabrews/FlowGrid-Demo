@@ -18,7 +18,7 @@ export default function TrackerTimerMenu() {
     /* Field Options */
     const fieldOptions = [
         { is_dropdown: true, title: 'Elapsed Time', label: 'Daily', drop_down_list: ['Daily', 'Weekly', 'Monthly', 'Yearly'] },
-        { is_dropdown : false, title: 'Interval', label: 'Streak', drop_down_list : ['']}
+        { is_dropdown : false, title: 'Daily Streak', label: 'Streak', drop_down_list : ['']}
     ]
 
 

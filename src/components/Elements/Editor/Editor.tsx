@@ -14,6 +14,10 @@ import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryCont
 // Pair Factory
 import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
 
+// Connection Line Context
+import { useConnectionLinesContext } from '../../Context/ConnectionLines';
+
+
 // drag and drop core
 import {
   DndContext,
@@ -32,6 +36,7 @@ import DragPreview from '../SideDropper/DragPreview';
 import Whiteboard from "../Whiteboard/Whiteboard";
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext';
 import SideDropper from "../SideDropper/SideDropper";
+import { line } from 'framer-motion/client';
 
 export default function Editor() {
 
@@ -61,6 +66,13 @@ export default function Editor() {
   const createPair = pairStore((state) => state.createPair);
   const connectedItems = pairStore((state) => state.connectedItems);
 
+  //Connection Line Store (moving objects)
+  const lineStore = useConnectionLinesContext()
+  const setLineElems = lineStore((state) => state.setLineElems)
+  const setPausedLineId = lineStore((state) => state.setPausedLineId)
+  const pauseLine = lineStore((state) => state.pauseLine)
+  const resumeLine = lineStore((state) => state.resumeLine)
+
 
   return (
     <DeleteModalProvider>
@@ -76,13 +88,22 @@ export default function Editor() {
 
           onDragStart={(event) => {
 
+
           // get dragged objects id
             const id = event.active.id
+            if (String(id).includes('tracker-input')) {
+              setPausedLineId(event.active?.data.current?.parentElementId)
+              pauseLine()
+            }
             const uniqueId = `${id}-${Date.now()}`;
             setActiveId(uniqueId)
             const type = event.active.data.current?.type
             setActiveType(type)  
+
           }}
+
+
+  
 
           // called when dragging ends (drop or cancel)
           onDragEnd={({ over, active }) => {
@@ -90,7 +111,10 @@ export default function Editor() {
             // console.log('over : ', over)
             // console.log('active : ', active)
 
+            resumeLine()
+    
 
+            
             if (over?.id === 'droppable-1') {
               const trackableItems = ['Timer'];
 
@@ -122,14 +146,17 @@ export default function Editor() {
             setActiveType(null)
           }
 
-          else if (over?.data.current?.type === 'tracker-output') {;
+
+
+          else if (over?.data.current?.type === 'tracker-output') {
             if (activeType === 'tracker-input') {
+            console.log('input dropped over output')
             const overParentId = over.data.current?.parentElementId;
             const activeParentId = active.data.current?.parentElementId
             addConnectedTracker(activeParentId)
             addConnectedItem(overParentId)
             createPair();
-            
+            setLineElems(activeParentId, overParentId)
           }
         }
 

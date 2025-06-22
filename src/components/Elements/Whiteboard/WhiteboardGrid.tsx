@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { JSX } from 'react';
 import GridLayout from 'react-grid-layout';
 import type { Layout } from 'react-grid-layout';
@@ -24,6 +24,8 @@ import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenu
 
 // Line Store
 import { useConnectionLinesContext } from '../../Context/ConnectionLines';
+import { line } from 'framer-motion/client';
+
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -53,62 +55,136 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
 
   // connection Line Context
   const lineStore = useConnectionLinesContext()
-  const connectionLines = lineStore((state) => state.connectionLines)
+  const elementRefs = lineStore((state) => state.elementRefs)
+  const setPausedLineId = lineStore((state) => state.setPausedLineId)
+  const pausedLineId = lineStore((state) => state.pausedLineId)
+  const pauseLine = lineStore((state) => state.pauseLine)
+  const resumeLine = lineStore((state) => state.resumeLine)
 
   const { open } = useDeleteModal();
 
+  // layout
   const [layout, setLayout] = useState<Layout[]>([]);
 
+
   useEffect(() => {
-    const newLayout = droppedItems.map((item: DroppedItem, index: number) => ({
-      i: item.id,
-      x: (index % 6) * 4,
-      y: Math.floor(index / 6) * 2,
-      w: 3,
-      h: 2,
-    }));
-    setLayout(newLayout);
+    setLayout((prevLayout) => {
+      // map existing layout by item id
+      const layoutMap = new Map(prevLayout.map((item) => [item.i, item]));
+
+      // build new layout, preserving old positions
+      return droppedItems.map((item, index) => {
+        const existing = layoutMap.get(item.id);
+        if (existing) return existing;
+
+        // new item → give it a default position
+        return {
+          i: item.id,
+          x: (index % 6) * 4,
+          y: Math.floor(index / 6) * 2,
+          w: 3,
+          h: 2,
+        };
+      });
+    });
   }, [droppedItems]);
 
+
+
+
   return (
+    <div style={{
+    width: '100%',
+    minHeight: '100%', // makes sure it's tall
+    overflow: 'none',
+    position: 'relative',
+    background: 'grey',
+    margin: '5%',
+    }}>
     <GridLayout
       layout={layout}
       compactType={null}
       cols={24}
-      rowHeight={50}
-      width={2000}
+      rowHeight={250}
+      width={3000}
       margin={gridMargin}
       preventCollision={true}
       draggableHandle=".drag-handle"
       isResizable={false}
       useCSSTransforms={false}
       onLayoutChange={setLayout}
+
+    onDragStart={() => {
+      if (pausedLineId !== '') {
+        pauseLine()
+      }
+    }}
+
+  onDragStop={() => {
+    setTimeout(() => {
+      resumeLine();
+    }, 200);
+  }}
+
+
+
     >
 
-      <svg style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', width: '100%', height: '100%' }}>
-  {connectionLines.map(({ startId, endId }) => {
-    const startEl = document.getElementById(startId);
-    const endEl = document.getElementById(endId);
+    
 
-    if (!startEl || !endEl) return null;
+  <svg
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 1000,
+      pointerEvents: 'none',
+    }}
+  >
+    {connectedItems.map((pair, idx) => {
+      const trackerEl = elementRefs.current[pair.tracker.id];
+      const itemEl = elementRefs.current[pair.item.id];
 
-    const startBox = startEl.getBoundingClientRect();
-    const endBox = endEl.getBoundingClientRect();
+      if (itemEl && trackerEl) {
+        const trackerInput = trackerEl.querySelector('.tracker-input');
+        const itemOutput = itemEl.querySelector('.tracker-output');
+        const inputSvg = trackerInput?.querySelector('svg');
+        const outputSvg = itemOutput?.querySelector('svg');
+        const inputRect = inputSvg?.getBoundingClientRect();
+        const outputRect = outputSvg?.getBoundingClientRect();
 
-    const startX = startBox.left + startBox.width / 2;
-    const startY = startBox.top + startBox.height / 2;
-    const endX = endBox.left + endBox.width / 2;
-    const endY = endBox.top + endBox.height / 2;
+        if (inputRect && outputRect) {
+          const x1 = outputRect.left + outputRect.width / 2;
+          const y1 = outputRect.top + outputRect.height / 2;
+          const x2 = inputRect.left + inputRect.width / 2;
+          const y2 = inputRect.top + inputRect.height / 2;
 
-    return <line key={startId + '-' + endId} x1={startX} y1={startY} x2={endX} y2={endY} stroke="black" />;
-  })}
-</svg>
+          return (
+            <line
+              key={pair.tracker.id + '-' + pair.item.id + '-' + idx}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="black"
+              strokeWidth={2}
+            />
+          );
+        }
+      }
+
+      return null;
+    })}
+  </svg>
+
 
 
       {droppedItems.map((item: DroppedItem) => (
         <div key={item.id} className="whiteboard-item">
           <div className="item-header">
-            <div className="drag-handle">::</div>
+            <div className="drag-handle" onMouseDown={() => setPausedLineId(item.id)}>::</div>
             <div
               className="delete-handle"
               onClick={() =>
@@ -127,24 +203,35 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
               X
             </div>
           </div>
-          {/* Dynamically render components and pass item.id to Timer */}
-          {item.type === 'Timer' && <Timer id={item.id} />}
-          {item.type === 'Tracker' && <Tracker id={item.id} />}
-          {item.type === 'Chart' && <div>Chart Component</div>}
-          {item.type === 'Note' && <div>Note Component</div>}
-          {!['Timer', 'Tracker', 'Chart', 'Note'].includes(item.type) && <p>Unknown component</p>}
+          <div ref={(el) => { elementRefs.current[item.id] = el }}> 
+            {/* Dynamically render components and pass item.id to Timer */}
+            {item.type === 'Timer' && <Timer id={item.id} />}
+            {item.type === 'Tracker' && <Tracker id={item.id} />}
+            {item.type === 'Chart' && <div>Chart Component</div>}
+            {item.type === 'Note' && <div>Note Component</div>}
+            {!['Timer', 'Tracker', 'Chart', 'Note'].includes(item.type) && <p>Unknown component</p>}
 
-          {/* Only trackable items get the Input/Output */}
-          {item.trackable && (
-            <TrackerOutput parentElementId={item.id} id={`tracker-output-${Date.now()}`} type={'tracker-output'} />
-          )}
+            {/* Only trackable items get the Input/Output */}
+            {item.trackable && (
+              <TrackerOutput parentElementId={item.id} id={`tracker-output-${item.id}`} type={'tracker-output'} />
+            )}
 
-          {/* Only tracker gets tracker input */}
-          {item.tracker && (
-            <TrackerInput parentElementId={item.id} id={`tracker-input-${item.id}`} type={'tracker-input'} />
-          )}
+            {/* Only tracker gets tracker input */}
+            {item.tracker && (
+              <TrackerInput parentElementId={item.id} id={`tracker-input-${item.id}`} type={'tracker-input'} />
+            )}
+          </div>
         </div>
+
+          
+
       ))}
+
+            
+
+
+
     </GridLayout>
+    </div>
   );
 }

@@ -15,12 +15,12 @@ export default function App() {
   return (
     <ItemFactoryProvider>
       <TimerMenuContextProvider>
-        <ConnectionLinesContextProvider>
           <PairFactoryyProvider>
+            <ConnectionLinesContextProvider>
                 <Editor/>
+            </ConnectionLinesContextProvider>
           </PairFactoryyProvider>
-        </ConnectionLinesContextProvider>
-      </TimerMenuContextProvider>
+        </TimerMenuContextProvider>
     </ItemFactoryProvider>
   )
 

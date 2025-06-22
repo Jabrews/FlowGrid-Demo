@@ -17,7 +17,6 @@ export default function TimeoutModel() {
   }, [showModal]);
 
   const handleClose = () => {
-    console.log('should close')
     if (timeoutSound.current) {
       timeoutSound.current.pause();
       timeoutSound.current.currentTime = 0;

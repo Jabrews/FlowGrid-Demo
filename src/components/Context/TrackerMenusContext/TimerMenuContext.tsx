@@ -12,7 +12,7 @@ export type connectedMenuItem = {
   item: DroppedItem ;
   tracker: DroppedItem;
   fields : {
-    increment: number;
+    dailyStreak : number;
   }
 };
 
