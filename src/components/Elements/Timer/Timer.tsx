@@ -1,45 +1,35 @@
 import { useTimer } from 'react-timer-hook';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ProgressBar from './ProgressBar';
-// Timeout model context
-import { useTimeoutModal } from '../TimeoutModel/TimeoutModelContext';
 
-  // Tracker/TimerMenu Context
-import {useTimerMenuContext} from '../../Context/TrackerMenusContext/TimerMenuContext';
+import { useTimeoutModal } from '../TimeoutModel/TimeoutModelContext';
+import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext';
+
+import {
+  handleTimerStreakField,
+  getLastTimeUsed,
+  addToElapsedTimeFieldValue,
+} from '../LocalStorage/TimerPairLocalStorage';
 
 type TimerProps = {
-  id: string; // Unique identifier for the timer
+  id: string;
 };
 
-// not connected to tracker by default
-let isConnected = false;
-
-
-export default function Timer({id} : TimerProps) {
-
-  // update timer when connected
-  const timerMenuStore = useTimerMenuContext();
-  const checkTimerConnected = timerMenuStore((state) => state.checkTimerConnected);
-
-  if (isConnected == false) {
-    isConnected = checkTimerConnected({id});
-  }
+export default function Timer({ id }: TimerProps) {
+  const { openModal } = useTimeoutModal();
 
   const startingTime = new Date();
-  startingTime.setSeconds(startingTime.getSeconds() + 5); // Default timer duration
+  startingTime.setSeconds(startingTime.getSeconds() + 5);
 
-  const [maxTime, setMaxTime] = useState(0); // Maximum time in seconds
+  const [maxTime, setMaxTime] = useState(0);
   const [Timer, setTimer] = useState(startingTime);
-  const [userMin, setUserMin] = useState(1); // User input for minutes
-  const [userHours, setUserHours] = useState(0); // User input for hours
-  const [userSec, setUserSec] = useState(0); // User input for seconds
+  const [userMin, setUserMin] = useState(1);
+  const [userHours, setUserHours] = useState(0);
+  const [userSec, setUserSec] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const elapsedRef = useRef(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-
-
-  // Timeout Model
-  const { openModal } = useTimeoutModal(); // Access the modal context
-
-  // Timer Settings
   const {
     seconds,
     minutes,
@@ -47,108 +37,111 @@ export default function Timer({id} : TimerProps) {
     pause,
     resume,
     restart,
+    isRunning,
   } = useTimer({
     expiryTimestamp: Timer,
     onExpire: () => {
-      console.log('Timer expired!');
-      // showcase modal
-      openModal()    },
+      openModal();
+      addToElapsedTimeFieldValue(id, elapsedRef.current);
+      elapsedRef.current = 0;
+      setElapsedTime(0);
+    },
   });
 
+  useEffect(() => {
+    const lastUsed = getLastTimeUsed(id);
+    if (lastUsed) {
+      handleTimerStreakField(lastUsed, id);
+    }
+  }, [id]);
 
-  // Handle form submission to set the timer
   function handleTimerSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Calculate the total time in seconds
     const totalSeconds = userHours * 3600 + userMin * 60 + userSec;
+    const future = new Date();
+    future.setSeconds(future.getSeconds() + totalSeconds);
 
-    // Create a new Date object for the future time
-    const futureTime = new Date();
-    futureTime.setSeconds(futureTime.getSeconds() + totalSeconds);
-
-    // Update the Timer state and maxTime
-    setTimer(futureTime);
+    setIsPaused(false);
     setMaxTime(totalSeconds);
+    setTimer(future);
+    restart(future);
 
-    // Restart the timer with the new expiry time
-    restart(futureTime);
+    elapsedRef.current = 0;
+    setElapsedTime(0);
   }
 
-  // reset timer to maxTime
   function resetTimer() {
-    const futureTime = new Date();
-    futureTime.setSeconds(futureTime.getSeconds() + maxTime);
-    setTimer(futureTime);
-    restart(futureTime);
+    const future = new Date();
+    future.setSeconds(future.getSeconds() + maxTime);
+    setTimer(future);
+    restart(future);
+    addToElapsedTimeFieldValue(id, elapsedRef.current);
+    elapsedRef.current = 0;
+    setElapsedTime(0);
+    setIsPaused(false);
   }
 
-  // Calculate the remaining time in seconds
-  const remainingTime = hours * 3600 + minutes * 60 + seconds;
+  useEffect(() => {
+    if (!isRunning || isPaused) return;
 
-  // Calculate the progress percentage
-  const progress = maxTime > 0 ? ((maxTime - remainingTime) / maxTime) * 100 : 0;
+    const interval = setInterval(() => {
+      elapsedRef.current += 1000;
+      setElapsedTime(elapsedRef.current);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, isPaused]);
+
+  const handlePause = () => {
+    pause();
+    setIsPaused(true);
+  };
+
+  const handleResume = () => {
+    resume();
+    setIsPaused(false);
+  };
+
+  const remaining = hours * 3600 + minutes * 60 + seconds;
+  const progress = maxTime > 0 ? ((maxTime - remaining) / maxTime) * 100 : 0;
 
   return (
-    <>
+    <div className="timer-container">
+      <form onSubmit={handleTimerSubmit} className="set-timer-container">
+        <label>Hours</label>
+        <input
+          type="number"
+          value={userHours}
+          onChange={(e) => setUserHours(Number(e.target.value))}
+        />
+        <label>Minutes</label>
+        <input
+          type="number"
+          value={userMin}
+          onChange={(e) => setUserMin(Number(e.target.value))}
+        />
+        <label>Seconds</label>
+        <input
+          type="number"
+          value={userSec}
+          onChange={(e) => setUserSec(Number(e.target.value))}
+        />
+        <button type="submit">Set Timer</button>
+      </form>
 
-      {/*  Timer Elemet */}
-      <div className="timer-container">
-        <form onSubmit={handleTimerSubmit} className='set-timer-container'>
-          {/* Hours input */}
-          <label htmlFor="hours">Hours</label>
-          <input
-            id="hours"
-            type="number"
-            placeholder="Type Hours"
-            value={userHours.toString()}
-            onChange={(e) => setUserHours(Number(e.target.value))}
-          />
+      <div className="progress-container">
+        <p>
+          Time Remaining: {hours}:{minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+        </p>
+        <ProgressBar progress={progress} />
+      </div>
 
-          {/* Minutes input */}
-          <label htmlFor="minutes">Minutes</label>
-          <input
-            id="minutes"
-            type="number"
-            placeholder="Type Minutes"
-            value={userMin.toString()}
-            onChange={(e) => setUserMin(Number(e.target.value))}
-          />
-
-          {/* Seconds Timer */}
-          <label htmlFor="seconds">Seconds</label>
-          <input
-            id="seconds"
-            type="number"
-            placeholder="Type Seconds"
-            value={userSec.toString()}
-            onChange={(e) => setUserSec(Number(e.target.value))}
-          />
-
-          {/* Submit button */}
-          <button type="submit">Set Timer</button>
-        </form>
-
-        <div className='progress-container'>
-        {/* Display time remaining */}
-          <p>
-            Time Remaining: {hours}:{minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-          </p>
-
-          {/* Progress bar */}
-          <ProgressBar progress={progress} />
-        </div>
-
-
-        {/* Timer controls */}
-        <div className='button-container'>
-          <button onClick={resetTimer}>Restart</button>
-          <button onClick={pause}>Pause</button>
-          <button onClick={resume}>Resume</button>
-          </div>
-      </div>    
-
-    </>
-
+      <div className="button-container">
+        <button onClick={resetTimer}>Restart</button>
+        <button onClick={handlePause}>Pause</button>
+        <button onClick={handleResume}>Resume</button>
+      </div>
+    </div>
   );
 }

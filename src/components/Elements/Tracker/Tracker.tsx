@@ -152,6 +152,7 @@ export default function Tracker({id}: TrackerProps) {
                                         }}
                                     >
                                         <TrackerTimerMenu 
+                                        parentTimerId={item.item.id}
                                         key={`timerMenu-${item.pairId}-${idx}`}
                                         {...item} />
                                     </div>

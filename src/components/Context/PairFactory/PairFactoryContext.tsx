@@ -4,7 +4,7 @@ import { create } from "zustand";
 import type { DroppedItem } from "../ItemFactory/ItemFactoryContext";
 import { useItemFactoryContext } from "../ItemFactory/ItemFactoryContext";
 
-import type { connectedMenuItem } from "../TrackerMenusContext/TimerMenuContext";
+import type { TimerPairItem } from "../TrackerMenusContext/TimerMenuContext";
 import { useTimerMenuContext } from "../TrackerMenusContext/TimerMenuContext";
 
 // type
@@ -17,7 +17,7 @@ export type PairObject = {
 // store factory
 const createPairFactoryStore = (
   getDroppedItems: () => DroppedItem[],
-  addTimeTrackerItem: (pairObject: connectedMenuItem) => void
+  addTimeTrackerItem: (pairObject: TimerPairItem) => void
 ) =>
   create((set, get) => ({
     connectedItems: [],
@@ -77,7 +77,9 @@ const createPairFactoryStore = (
             tracker: connectedTracker,
             item: connectedItem,
             fields: {
-              increment: 0,
+              dailyStreak: 0,
+              lastTimeUsed: Date.now().toString(),
+              elaspedTime : 0
             },
           });
         }
