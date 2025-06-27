@@ -7,6 +7,8 @@ import TimeoutModel from "../TimeoutModel/TimeoutModel";
 import { DeleteModalProvider } from "../DeleteElementModel/DeleteElementModelContext";
 import DeleteElementModel from '../DeleteElementModel/DeleteElementModel'
 import '../../../styles/main.css';
+// modal : connection toggle 
+import { ConnectionToggleModalContextProvider } from '../../Context/Modals/ConnectionToggleModalContext';
 
 // Item Factory
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
@@ -15,7 +17,7 @@ import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryCont
 import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
 
 // Connection Line Context
-import { useConnectionLinesContext } from '../../Context/ConnectionLines';
+import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
 
 
 // drag and drop core
@@ -36,7 +38,6 @@ import DragPreview from '../SideDropper/DragPreview';
 import Whiteboard from "../Whiteboard/Whiteboard";
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext';
 import SideDropper from "../SideDropper/SideDropper";
-import { line } from 'framer-motion/client';
 
 export default function Editor() {
 
@@ -77,9 +78,11 @@ export default function Editor() {
   return (
     <DeleteModalProvider>
     <ModalProvider>
+    <ConnectionToggleModalContextProvider>
       <>
         <DeleteElementModel/>
         <TimeoutModel />
+
 
         <DndContext
 
@@ -179,6 +182,7 @@ export default function Editor() {
           </DragOverlay>
         </DndContext>
       </>
+    </ConnectionToggleModalContextProvider>
     </ModalProvider>
     </DeleteModalProvider>
   );

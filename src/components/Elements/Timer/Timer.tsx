@@ -3,13 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 
 import { useTimeoutModal } from '../TimeoutModel/TimeoutModelContext';
-import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext';
-
-import {
-  handleTimerStreakField,
-  getLastTimeUsed,
-  addToElapsedTimeFieldValue,
-} from '../LocalStorage/TimerPairLocalStorage';
+import { useTimerMenuContext}from '../../Context/TrackerMenusContext/TimerMenuContext';
 
 type TimerProps = {
   id: string;
@@ -29,6 +23,15 @@ export default function Timer({ id }: TimerProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const elapsedRef = useRef(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [displayEndModal, toggleDisplayEndModal] = useState(true)
+
+
+  // timer menu store
+  const timerMenuStore = useTimerMenuContext()
+  const getLastTimeUsed = timerMenuStore((state) => state.getLastTimeUsed)
+  const handleTimerStreakField = timerMenuStore((state) => state.handleTimerStreakField)
+  const addToElaspedTimeFieldValue = timerMenuStore((state) => state.addToElaspedTimeFieldValue)  
+
 
   const {
     seconds,
@@ -41,12 +44,20 @@ export default function Timer({ id }: TimerProps) {
   } = useTimer({
     expiryTimestamp: Timer,
     onExpire: () => {
-      openModal();
-      addToElapsedTimeFieldValue(id, elapsedRef.current);
+      handleDisplayModal()
+      addToElaspedTimeFieldValue(id, elapsedRef.current);
       elapsedRef.current = 0;
       setElapsedTime(0);
     },
   });
+
+  // bit hacky
+  const handleDisplayModal = () => {
+      if (displayEndModal) {
+        openModal();
+        toggleDisplayEndModal(false)
+      }
+  }
 
   useEffect(() => {
     const lastUsed = getLastTimeUsed(id);
@@ -57,6 +68,7 @@ export default function Timer({ id }: TimerProps) {
 
   function handleTimerSubmit(e: React.FormEvent) {
     e.preventDefault();
+    toggleDisplayEndModal(true)
 
     const totalSeconds = userHours * 3600 + userMin * 60 + userSec;
     const future = new Date();
@@ -72,11 +84,12 @@ export default function Timer({ id }: TimerProps) {
   }
 
   function resetTimer() {
+    toggleDisplayEndModal(true)
     const future = new Date();
     future.setSeconds(future.getSeconds() + maxTime);
     setTimer(future);
     restart(future);
-    addToElapsedTimeFieldValue(id, elapsedRef.current);
+    addToElaspedTimeFieldValue(id, elapsedRef.current);
     elapsedRef.current = 0;
     setElapsedTime(0);
     setIsPaused(false);

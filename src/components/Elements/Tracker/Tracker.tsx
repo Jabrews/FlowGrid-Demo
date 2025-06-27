@@ -8,7 +8,7 @@ import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryCont
 import TrackerTimerMenu from "./TrackerMenus/TrackerTimerMenu"
 
 // connection line context
-import { useConnectionLinesContext } from '../../Context/ConnectionLines'
+import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines'
 
 type TrackerProps = {
     id: string;
@@ -19,8 +19,6 @@ type MenuInfo = {
     activeId : string;
 }
 
-// not connected to tracker by default
-let isConnected = false;
 
 export default function Tracker({id}: TrackerProps) {
     const [connectedMenuItems, setConnectedMenuItems] = useState<connectedMenuItem[]>([])
@@ -82,9 +80,7 @@ export default function Tracker({id}: TrackerProps) {
         }
     }, [timerTrackerItems]);
 
-    if (isConnected === false) {
-        isConnected = checkTrackerConnected({id});
-    }
+    
 
     const loadMenuInfoFromIndex = (index: number) => {
         const item = activeMenuInfo[index];
@@ -153,6 +149,7 @@ export default function Tracker({id}: TrackerProps) {
                                     >
                                         <TrackerTimerMenu 
                                         parentTimerId={item.item.id}
+                                        parentTrackerId={item.tracker.id}
                                         key={`timerMenu-${item.pairId}-${idx}`}
                                         {...item} />
                                     </div>

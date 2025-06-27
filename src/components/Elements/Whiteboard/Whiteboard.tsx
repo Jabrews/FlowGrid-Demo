@@ -5,12 +5,13 @@ import { useDroppable } from '@dnd-kit/core';
 import WhiteboardGrid from './WhiteboardGrid';
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext';
 import ConnectionLineRenderer from '../ConnectionLineRenderer/ConnectionLineRenderer';
+import ModalRenderer from '../ModalRenderer/ModalRenderer';
 
 // Item Factory
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
 
 // line factory context (for scrolling)
-import { useConnectionLinesContext } from '../../Context/ConnectionLines';
+import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
 
 export default function Whiteboard() {
   const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
@@ -59,6 +60,7 @@ const handleScroll = () => {
         className="droppable-div"
       >
         <ConnectionLineRenderer />
+        <ModalRenderer />
         <WhiteboardGrid gridMargin={gridMargin} />
       </div>
     </div>

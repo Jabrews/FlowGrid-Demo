@@ -7,7 +7,7 @@ import { PairFactoryyProvider } from "./components/Context/PairFactory/PairFacto
 import { TimerMenuContextProvider } from "./components/Context/TrackerMenusContext/TimerMenuContext";
 
 // leader line context
-import { ConnectionLinesContextProvider } from "./components/Context/ConnectionLines";
+import { ConnectionLinesContextProvider } from "./components/Context/ConnectionLines/ConnectionLines";
 
 
 export default function App() {

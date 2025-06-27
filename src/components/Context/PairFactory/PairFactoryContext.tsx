@@ -7,12 +7,6 @@ import { useItemFactoryContext } from "../ItemFactory/ItemFactoryContext";
 import type { TimerPairItem } from "../TrackerMenusContext/TimerMenuContext";
 import { useTimerMenuContext } from "../TrackerMenusContext/TimerMenuContext";
 
-// type
-export type PairObject = {
-  trackerId: string;
-  itemId: string;
-  type: string;
-};
 
 // store factory
 const createPairFactoryStore = (

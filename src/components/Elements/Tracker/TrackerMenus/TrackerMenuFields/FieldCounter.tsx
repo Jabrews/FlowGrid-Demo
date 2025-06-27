@@ -1,10 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import {
-  updateStreakFieldValue,
-  getElapsedTimeFieldValue,
-  updateElapsedTimeFieldValue,
-  getStreakFieldValue,
-} from '../../../LocalStorage/TimerPairLocalStorage';
+import { useTimerMenuContext } from '../../../../Context/TrackerMenusContext/TimerMenuContext';
+
 
 export type FieldCounterProps = {
   is_dropdown: boolean;
@@ -14,6 +10,7 @@ export type FieldCounterProps = {
   id: string;
   type: string;
   parentTimerId: string;
+  parentTrackerId : string;
 };
 
 export default function FieldCounter({
@@ -21,9 +18,18 @@ export default function FieldCounter({
   label,
   drop_down_list,
   parentTimerId,
+  parentTrackerId,
   type,
   id,
 }: FieldCounterProps) {
+
+  // timer menu store
+  const timerMenuStore = useTimerMenuContext()
+  const getStreakFieldValue = timerMenuStore((state) => state.getStreakFieldValue)
+  // trackerId: string, key: string, newValue: number
+  const updateTimerFieldData = timerMenuStore((state) => state.updateTimerFieldData)
+  const getElaspedTimeFieldValue = timerMenuStore((state) => state.getElaspedTimeFieldValue)
+
   const [showDropdown, toggleDropdown] = useState(false);
   const [activeTimeFrame, toggleTimeFrame] = useState(label);
   const [initialValue, setInitialValue] = useState<number | undefined>();
@@ -59,11 +65,11 @@ export default function FieldCounter({
       if (type === 'streak') {
         const number = parseInt(inputValue);
         if (!isNaN(number)) {
-          updateStreakFieldValue(parentTimerId, number);
+          updateTimerFieldData(parentTrackerId, 'dailyStreak', number);
         }
       } else if (type === 'elapsed') {
         const ms = parseTime(inputValue);
-        updateElapsedTimeFieldValue(parentTimerId, ms);
+        updateTimerFieldData(parentTrackerId, 'elaspedTime', ms);
       }
       isTyping.current = false;
     } catch (error) {
@@ -81,7 +87,7 @@ export default function FieldCounter({
         setInitialValue(value);
         setInputValue(String(value));
       } else if (type === 'elapsed') {
-        const value = getElapsedTimeFieldValue(parentTimerId);
+        const value = getElaspedTimeFieldValue(parentTimerId);
         setInitialValue(value);
         setInputValue(formatTime(value));
       }

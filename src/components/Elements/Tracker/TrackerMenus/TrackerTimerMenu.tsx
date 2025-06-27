@@ -4,14 +4,14 @@ import type { FieldCounterProps } from './TrackerMenuFields/FieldCounter';
 
 export type TrackerTimerMenuProps = {
   parentTimerId: string;
+  parentTrackerId : string;
 };
 
-export default function TrackerTimerMenu({ parentTimerId }: TrackerTimerMenuProps) {
+export default function TrackerTimerMenu({ parentTimerId, parentTrackerId }: TrackerTimerMenuProps) {
   const [showDropdown, toggleDropdown] = useState(false);
   const [fields, setFields] = useState<FieldCounterProps[]>([]);
 
 
-  console.log('parent timer id : ', parentTimerId)
 
   const fieldOptions = [
     {
@@ -56,6 +56,7 @@ export default function TrackerTimerMenu({ parentTimerId }: TrackerTimerMenuProp
                       id: `FieldCounter-${Date.now()}`,
                       type: item.type,
                       parentTimerId: parentTimerId,
+                      parentTrackerId : parentTrackerId,
                     },
                   ]);
                 }}

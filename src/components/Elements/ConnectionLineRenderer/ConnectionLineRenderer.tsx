@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { usePairFactoryContext } from "../../Context/PairFactory/PairFactoryContext";
-import { useConnectionLinesContext } from "../../Context/ConnectionLines";
+import { useConnectionLinesContext } from "../../Context/ConnectionLines/ConnectionLines";
 
 export default function ConnectionLineRenderer() {
   const svgRef = useRef<SVGSVGElement>(null);

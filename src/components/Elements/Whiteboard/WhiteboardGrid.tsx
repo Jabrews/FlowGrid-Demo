@@ -23,7 +23,7 @@ import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryCont
 import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext';
 
 // Line Store
-import { useConnectionLinesContext } from '../../Context/ConnectionLines';
+import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
 import { line } from 'framer-motion/client';
 
 

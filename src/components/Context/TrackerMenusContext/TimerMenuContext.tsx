@@ -5,7 +5,8 @@ import { create } from "zustand";
 import type { DroppedItem } from "../ItemFactory/ItemFactoryContext";
 
 // create local storage item
-import { addTimerPair } from "../../Elements/LocalStorage/TimerPairLocalStorage";
+import {addTimerPairToLocalStorage, saveTimerPairsToLocalStorage} from "../../Elements/LocalStorage/TimerPairLocalStorage";
+
 
 
 export type TimerPairItem = {
@@ -26,20 +27,10 @@ const TimerMenuStore = () =>
   create((set, get) => ({
     timerTrackerItems: [],
     addTimeTrackerItem: (pairObject: TimerPairItem) => {
-        addTimerPair(pairObject);
-        set((state) => ({
-            timerTrackerItems: [...state.timerTrackerItems, pairObject],
-        }));
-    },
-    checkTimerConnected: (timerId: string) => {
-      return get().timerTrackerItems.some((pair: TimerPairItem) =>
-        pair.item.id === timerId
-      );
-    },
-    checkTrackerConnected: (trackerId: string) => {
-      return get().timerTrackerItems.some((pair: TimerPairItem) =>
-        pair.tracker.id === trackerId
-      );
+      addTimerPairToLocalStorage(pairObject);
+      set((state) => ({
+        timerTrackerItems: [...state.timerTrackerItems, pairObject],
+      }));
     },
     findTimerTrackerConnections: (trackerId: string) => {
       return get().timerTrackerItems.filter((item: TimerPairItem) =>
@@ -73,9 +64,94 @@ const TimerMenuStore = () =>
           return pair;
         }),
       }));
+      // save updated state to localStorage
+      const updatedItems = get().timerTrackerItems;
+      saveTimerPairsToLocalStorage(updatedItems);
+    }, 
+    getLastTimeUsed: (timerId: string) => {
+      try {
+        const match = get().timerTrackerItems.find((item) => item.item.id === timerId);
+        return match?.fields.lastTimeUsed ?? null;
+      } catch (error) {
+        console.error('Error in getLastTimeUsed:', error);
+        return null;
+      }
     },
+    getStreakFieldValue: (timerId : string) => {
+      try {
+        const match = get().timerTrackerItems.find((item) => item.item.id === timerId);
+        return match?.fields.dailyStreak?? null;
+      } catch (error) {
+        console.error('Error in getLastTimeUsed:', error);
+        return null;
+      }
+    },
+    getElaspedTimeFieldValue : (timerId : string) => {
+      try {
+        const match = get().timerTrackerItems.find((item) => item.item.id === timerId);
+        return match?.fields.elaspedTime?? null;
+      } catch (error) {
+        console.error('Error in getLastTimeUsed:', error);
+        return null;
+      }
+    },
+    addToElaspedTimeFieldValue : (timerId : string, timeAdded : number) => {
+      try {
+        const match = get().timerTrackerItems.find((item) => item.item.id === timerId);
+        match.fields.elaspedTime += timeAdded
+        const updatedItems = get().timerTrackerItems;
+        saveTimerPairsToLocalStorage(updatedItems);
+      } 
+      catch (error) {
+        console.log('error adding to elasped time field, likely just not connected yet : ', error)
+      }
+            },
+    handleTimerStreakField: (lastTimeUsed: string, timerId: string) => {
+      const oneDay = 1000 * 60 * 60 * 24;
+      const current = Math.floor(Date.now() / oneDay);
+      const previous = Math.floor(Number(lastTimeUsed) / oneDay);
+      const dayDifference = current - previous;
+
+      if (dayDifference === 0) {
+        console.log('same day');
+        return;
+      } else if (dayDifference === 1) {
+        get().updateStreak(timerId, 'increment');
+      } else if (dayDifference >= 2) {
+        get().updateStreak(timerId, 'reset');
+      }
+    },
+    updateStreak: (timerId: string, streakStatus: 'increment' | 'reset') => {
+      set((state) => ({
+        timerTrackerItems: state.timerTrackerItems.map((pair: TimerPairItem) => {
+          if (pair.item.id === timerId) {
+            const newStreak = streakStatus === 'increment'
+              ? (pair.fields.dailyStreak || 0) + 1
+              : 0;
+
+            return {
+              ...pair,
+              fields: {
+                ...pair.fields,
+                dailyStreak: newStreak,
+                lastTimeUsed: Date.now().toString(),
+              },
+            };
+          }
+          return pair;
+        }),
+      }));
+
+      // save updated state to localStorage
+      const updatedItems = get().timerTrackerItems;
+      saveTimerPairsToLocalStorage(updatedItems);
+    }, 
+
+    
 
   }));
+
+
 
 // context
 const TimerMenuContext = createContext(null);
