@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { JSX } from 'react';
 import GridLayout from 'react-grid-layout';
 import type { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -9,7 +8,6 @@ import Tracker from '../Tracker/Tracker';
 import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
 
-import { useDeleteModal } from '../DeleteElementModel/DeleteElementModelContext';
 
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext'
 
@@ -24,8 +22,9 @@ import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenu
 
 // Line Store
 import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
-import { line } from 'framer-motion/client';
 
+// Delete Element Modal Context
+import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -61,7 +60,11 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   const pauseLine = lineStore((state) => state.pauseLine)
   const resumeLine = lineStore((state) => state.resumeLine)
 
-  const { open } = useDeleteModal();
+
+  // delete element modal context
+  const deleteElementModalStore = useDeleteElementModalContext()
+  const {toggleShowModal, setTargetId} = deleteElementModalStore((state) => state)
+
 
   // layout
   const [layout, setLayout] = useState<Layout[]>([]);
@@ -90,7 +93,11 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   }, [droppedItems]);
 
 
+  const handleDeleteHandle = (targetItemId : string) => {
 
+    toggleShowModal(true)
+    setTargetId(targetItemId)
+  } 
 
   return (
     <div style={{
@@ -187,18 +194,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
             <div className="drag-handle" onMouseDown={() => setPausedLineId(item.id)}>::</div>
             <div
               className="delete-handle"
-              onClick={() =>
-                open(item.id, () => {
-                  removeDroppedItem(item.id);
-                  removeConnectedItem(item.id);
-                  if (item.type == 'Timer' && item.connected == true) {
-                    removeTimerTrackerItem(item.id)
-                  }
-                  else if (item.type  == 'Tracker' && item.connected == true) {
-                    removeTimerTracker(item.id)
-                  }
-                })
-              }
+              onClick={() => {handleDeleteHandle(item.id)}}
             >
               X
             </div>

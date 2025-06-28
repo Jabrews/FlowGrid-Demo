@@ -1,0 +1,37 @@
+
+
+
+.modal-connection-container {
+    display: flex;
+
+    .modal-connection-list {
+        display: flex ;
+        flex-direction: column;
+
+        .modal-connection-item {
+            margin-top: 0.3em;
+            margin-bottom: 0.3em;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: flex-start;
+            justify-items: first baseline;
+
+            .modal-checkbox {
+                width: 2em;
+                height: 2em;
+            }
+
+            .modal-connection-label {
+                font-size: 0.9em;
+            }
+
+            span {
+                justify-self: flex-end;
+            }
+
+
+        }
+
+
+    }
+}

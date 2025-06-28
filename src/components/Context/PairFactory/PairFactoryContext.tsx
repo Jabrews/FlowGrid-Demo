@@ -8,95 +8,117 @@ import type { TimerPairItem } from "../TrackerMenusContext/TimerMenuContext";
 import { useTimerMenuContext } from "../TrackerMenusContext/TimerMenuContext";
 
 
+export type ConnectedPair = {
+  tracker: DroppedItem;
+  item: DroppedItem;
+};
+
+
 // store factory
 const createPairFactoryStore = (
   getDroppedItems: () => DroppedItem[],
   addTimeTrackerItem: (pairObject: TimerPairItem) => void
 ) =>
-  create((set, get) => ({
+  create<{
+    connectedItems: ConnectedPair[];
+    connectedTracker: DroppedItem | null;
+    connectedItem: DroppedItem | null;
+    addConnectedTracker: (trackerId: string) => void;
+    addConnectedItem: (itemId: string) => void;
+    createPair: () => void;
+    removeConnectedItem: (itemId: string) => void;
+    getTotalTrackerConnections: (trackerId: string) => number;
+
+  }>((set, get) => ({
     connectedItems: [],
     connectedTracker: null,
     connectedItem: null,
 
-    addConnectedTracker: (trackerId: string) =>
-      set((state: any) => {
-        const droppedItems = getDroppedItems();
-        const item = droppedItems.find(
-          (item) => item.id === trackerId && item.tracker === true
+    addConnectedTracker: (trackerId: string) => {
+      const droppedItems = getDroppedItems();
+      const item = droppedItems.find(
+        (item) => item.id === trackerId && item.tracker === true
+      );
+      set((state) => ({
+        connectedTracker: item || state.connectedTracker,
+      }));
+    },
+
+    addConnectedItem: (itemId: string) => {
+      const droppedItems = getDroppedItems();
+      const item = droppedItems.find(
+        (item) => item.id === itemId && item.trackable === true
+      );
+      set((state) => ({
+        connectedItem: item || state.connectedItem,
+      }));
+    },
+
+    createPair: () => {
+      const { connectedItem, connectedTracker, connectedItems } = get();
+
+      if (!connectedItem || !connectedTracker) {
+        console.log("Cannot create pair: missing connectedItem or connectedTracker.");
+        return;
+      }
+
+      if (connectedItem.connected) {
+        const alreadyConnected = connectedItems.some(
+          (pair) =>
+            pair.tracker.id === connectedTracker.id &&
+            pair.item.id === connectedItem.id
         );
-        return {
-          connectedTracker: item || state.connectedTracker,
-        };
-      }),
-
-    addConnectedItem: (itemId: string) =>
-      set((state: any) => {
-        const droppedItems = getDroppedItems();
-        const item = droppedItems.find(
-          (item) => item.id === itemId && item.trackable === true
-        );
-        return {
-          connectedItem: item || state.connectedItem,
-        };
-      }),
-
-    createPair: () =>
-      set((state) => {
-        const { connectedItem, connectedTracker, connectedItems } = state;
-
-        if (!connectedItem || !connectedTracker) {
-          console.log("Cannot create pair: missing connectedItem or connectedTracker.");
-          return state;
+        if (alreadyConnected) {
+          console.log("tracker already has connection:", connectedTracker.id);
+          return;
         }
+      }
 
-        if (connectedItem.connected) {
-          const alreadyConnected = connectedItems.some(
-            (pair) =>
-              pair.tracker.id === connectedTracker.id &&
-              pair.item.id === connectedItem.id
-          );
-          if (alreadyConnected) {
-            console.log("tracker already has connection:", connectedTracker.id);
-            return state;
-          }
-        }
+      connectedItem.connected = true;
+      connectedTracker.connected = true;
 
-        connectedItem.connected = true;
-        connectedTracker.connected = true;
+      if (connectedItem.type === "Timer") {
+        addTimeTrackerItem({
+          type: "TimerPair",
+          pairId: `TimerPair-${Date.now()}`,
+          tracker: connectedTracker,
+          item: connectedItem,
+          fields: {
+            dailyStreak: 0,
+            lastTimeUsed: Date.now().toString(),
+            elaspedTime: 0,
+          },
+        });
+      }
 
-        if (connectedItem.type === "Timer") {
-          addTimeTrackerItem({
-            type: "TimerPair",
-            pairId: `TimerPair-${Date.now()}`,
+      set((state) => ({
+        connectedItems: [
+          ...state.connectedItems,
+          {
             tracker: connectedTracker,
             item: connectedItem,
-            fields: {
-              dailyStreak: 0,
-              lastTimeUsed: Date.now().toString(),
-              elaspedTime : 0
-            },
-          });
-        }
+          },
+        ],
+      }));
+    },
 
-        return {
-          ...state,
-          connectedItems: [
-            ...connectedItems,
-            {
-              tracker: connectedTracker,
-              item: connectedItem,
-            },
-          ],
-        };
-      }),
-
-    removeConnectedItem: (itemId: string) =>
+    removeConnectedItem: (itemId: string) => {
       set((state) => ({
         connectedItems: state.connectedItems.filter(
           (pair) => pair.item.id !== itemId
         ),
-      })),
+      }));
+    },
+
+    getTotalTrackerConnections: (trackerId: string) => {
+      const totalConnections = get().connectedItems.filter(
+        (item) => item.tracker.id === trackerId
+      ).length;
+      return totalConnections;
+    },
+
   }));
+
 
 // context
 const pairFactoryContext = createContext<ReturnType<typeof createPairFactoryStore> | null>(null);

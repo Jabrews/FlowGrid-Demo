@@ -1,34 +1,35 @@
 import {motion} from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { useTimeoutModal } from "./TimeoutModelContext";
+import { useTimeoutModalContext } from '../../Context/Modals/TimeoutModalContext';
+
+
 
 export default function TimeoutModel() {
-  const { showModal, closeModal } = useTimeoutModal();
 
   const timeoutSound = useRef<HTMLAudioElement | null>(null); // ✅ correct typing
+  // Timeout Store
+  const timeoutModalStore = useTimeoutModalContext()
+  const toggleShowModal = timeoutModalStore((state) => state.toggleShowModal)
+
 
   useEffect(() => {
-    if (showModal) {
-      timeoutSound.current = new Audio('/sounds/TimerEnd.mp3');
+      timeoutSound.current = new Audio('../../../../public/sounds/TimerEnd.mp3');
       timeoutSound.current.play().catch(e => {
         console.log('Autoplay blocked:', e);
-      });
-    }
-  }, [showModal]);
+      })
+    }, []);
 
   const handleClose = () => {
     if (timeoutSound.current) {
       timeoutSound.current.pause();
       timeoutSound.current.currentTime = 0;
     }
-    closeModal();
+    toggleShowModal(false)
   };
 
-  if (!showModal) return null;
 
   return (
-    <motion.div className="center-modal" drag dragMomentum={false}
->
+    <motion.div className="center-modal" drag dragMomentum={false}>
       <p> Timer Ended!</p>
       <button onClick={handleClose} onTouchStart={handleClose}>Close</button>
     </motion.div>

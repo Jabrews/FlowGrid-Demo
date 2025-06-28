@@ -1,14 +1,15 @@
 import {useState} from 'react';
 
 
-// modal system
-import { ModalProvider } from "../TimeoutModel/TimeoutModelContext";
-import TimeoutModel from "../TimeoutModel/TimeoutModel";
-import { DeleteModalProvider } from "../DeleteElementModel/DeleteElementModelContext";
-import DeleteElementModel from '../DeleteElementModel/DeleteElementModel'
 import '../../../styles/main.css';
-// modal : connection toggle 
+
+// modal : element connection toggle 
 import { ConnectionToggleModalContextProvider } from '../../Context/Modals/ConnectionToggleModalContext';
+// modal : timer timeout
+import { TimeoutModalContextProvider } from '../../Context/Modals/TimeoutModalContext';
+// modal : Delete Element
+import { DeleteElementModalContextProvider } from '../../Context/Modals/DeleteElementModalContext';
+
 
 // Item Factory
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
@@ -36,7 +37,6 @@ import DragPreview from '../SideDropper/DragPreview';
 
 // components
 import Whiteboard from "../Whiteboard/Whiteboard";
-import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext';
 import SideDropper from "../SideDropper/SideDropper";
 
 export default function Editor() {
@@ -76,14 +76,12 @@ export default function Editor() {
 
 
   return (
-    <DeleteModalProvider>
-    <ModalProvider>
+
     <ConnectionToggleModalContextProvider>
+    <TimeoutModalContextProvider>
+    <DeleteElementModalContextProvider>
       <>
-        <DeleteElementModel/>
-        <TimeoutModel />
-
-
+      
         <DndContext
 
           sensors={sensors}
@@ -111,13 +109,8 @@ export default function Editor() {
           // called when dragging ends (drop or cancel)
           onDragEnd={({ over, active }) => {
 
-            // console.log('over : ', over)
-            // console.log('active : ', active)
-
             resumeLine()
-    
-
-            
+                
             if (over?.id === 'droppable-1') {
               const trackableItems = ['Timer'];
 
@@ -153,7 +146,6 @@ export default function Editor() {
 
           else if (over?.data.current?.type === 'tracker-output') {
             if (activeType === 'tracker-input') {
-            console.log('input dropped over output')
             const overParentId = over.data.current?.parentElementId;
             const activeParentId = active.data.current?.parentElementId
             addConnectedTracker(activeParentId)
@@ -182,8 +174,8 @@ export default function Editor() {
           </DragOverlay>
         </DndContext>
       </>
+    </DeleteElementModalContextProvider>
+    </TimeoutModalContextProvider>
     </ConnectionToggleModalContextProvider>
-    </ModalProvider>
-    </DeleteModalProvider>
   );
 }

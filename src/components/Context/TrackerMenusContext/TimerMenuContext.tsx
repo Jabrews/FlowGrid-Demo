@@ -37,18 +37,17 @@ const TimerMenuStore = () =>
         item.tracker.id === trackerId
       );
     },
-    removeTimerTrackerItem: (timerId: string) =>
+    removeTimerPairByItemId: (itemId: string) => {
       set((state) => ({
         timerTrackerItems: state.timerTrackerItems.filter(
-          (pair: TimerPairItem) => pair.item.id !== timerId
+          (pair: TimerPairItem) =>
+            pair.item.id !== itemId && pair.tracker.id !== itemId
         ),
-      })),
-    removeTimerTracker: (trackerId: string) =>
-      set((state) => ({
-        timerTrackerItems: state.timerTrackerItems.filter(
-          (pair: TimerPairItem) => pair.tracker.id !== trackerId
-        ),
-      })),
+      }));
+
+      const updatedItems = get().timerTrackerItems;
+      saveTimerPairsToLocalStorage(updatedItems);
+    },
     updateTimerFieldData: (trackerId: string, key: string, newValue: number) => {
       set((state) => ({
         timerTrackerItems: state.timerTrackerItems.map((pair: TimerPairItem) => {

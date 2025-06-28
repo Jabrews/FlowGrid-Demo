@@ -2,16 +2,16 @@ import { useTimer } from 'react-timer-hook';
 import { useState, useEffect, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 
-import { useTimeoutModal } from '../TimeoutModel/TimeoutModelContext';
 import { useTimerMenuContext}from '../../Context/TrackerMenusContext/TimerMenuContext';
+import { useTimeoutModalContext } from '../../Context/Modals/TimeoutModalContext';
+
+
 
 type TimerProps = {
   id: string;
 };
 
 export default function Timer({ id }: TimerProps) {
-  const { openModal } = useTimeoutModal();
-
   const startingTime = new Date();
   startingTime.setSeconds(startingTime.getSeconds() + 5);
 
@@ -31,6 +31,11 @@ export default function Timer({ id }: TimerProps) {
   const getLastTimeUsed = timerMenuStore((state) => state.getLastTimeUsed)
   const handleTimerStreakField = timerMenuStore((state) => state.handleTimerStreakField)
   const addToElaspedTimeFieldValue = timerMenuStore((state) => state.addToElaspedTimeFieldValue)  
+
+  // timer modal store
+  const timerModalStore = useTimeoutModalContext()
+  const toggleTimerModal = timerModalStore((state) => state.toggleShowModal)
+  
 
 
   const {
@@ -54,7 +59,7 @@ export default function Timer({ id }: TimerProps) {
   // bit hacky
   const handleDisplayModal = () => {
       if (displayEndModal) {
-        openModal();
+        toggleTimerModal(true)
         toggleDisplayEndModal(false)
       }
   }

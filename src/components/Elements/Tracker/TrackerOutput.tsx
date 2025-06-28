@@ -15,13 +15,16 @@ export default function TrackerOutput({ parentElementId, id, type }: TrackerOutp
   // connectionToggleModalStore 
   const connectionToggleStore = useConnectionToggleModalStore()
   const toggleShowModal = connectionToggleStore((state) => state.toggleShowModal)
+  const setParentItemId = connectionToggleStore((state) => state.setParentItemId)
   // pairFactoyStore
   const pairFactoryStore = usePairFactoryContext()
   const connectedItems = pairFactoryStore((state) => state.connectedItems)
 
+
   const handleToggleConnectionModal = () => {
     connectedItems.map((item) => {
       if (item.item.id == parentElementId) {
+        setParentItemId(parentElementId)
         toggleShowModal(true)
         return
       }

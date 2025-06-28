@@ -26,6 +26,7 @@ const createConnectionLinesStore = () =>
 
     setLineElems: (inputParentId: string, outputParentId: string) => {
       set((state) => ({
+        
         lineElems: [
           ...state.lineElems,
           {
@@ -62,6 +63,12 @@ const createConnectionLinesStore = () =>
         set({ lineElems: updatedLineElems });
       }, 10);
     },
+
+    removeLineElem: (itemId: string) =>
+      set((state) => ({
+        lineElems: state.lineElems.filter((item: lineElem) => item.itemId !== itemId),
+      })),
+
 
     refreshLineElems: (connectedItems: any[]) => {
       set(() => ({

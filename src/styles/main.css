@@ -465,6 +465,32 @@
   background-color: rgb(185, 185, 185);
 }
 
+.modal-connection-container {
+  display: flex;
+}
+.modal-connection-container .modal-connection-list {
+  display: flex;
+  flex-direction: column;
+}
+.modal-connection-container .modal-connection-list .modal-connection-item {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: flex-start;
+  justify-items: first baseline;
+}
+.modal-connection-container .modal-connection-list .modal-connection-item .modal-checkbox {
+  width: 2em;
+  height: 2em;
+}
+.modal-connection-container .modal-connection-list .modal-connection-item .modal-connection-label {
+  font-size: 0.9em;
+}
+.modal-connection-container .modal-connection-list .modal-connection-item span {
+  justify-self: flex-end;
+}
+
 /* Minimal nCSS Reset */
 * {
   margin: 0;
