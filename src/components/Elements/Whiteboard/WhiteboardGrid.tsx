@@ -101,7 +101,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
 
   return (
     <div style={{
-    width: '100%',
+    width: '200%',
     minHeight: '100%', // makes sure it's tall
     overflow: 'none',
     position: 'relative',
