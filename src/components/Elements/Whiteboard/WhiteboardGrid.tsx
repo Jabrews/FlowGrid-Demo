@@ -25,6 +25,8 @@ import { useConnectionLinesContext } from '../../Context/ConnectionLines/Connect
 
 // Delete Element Modal Context
 import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
+import { use } from 'framer-motion/client';
+import { number } from 'framer-motion';
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -55,6 +57,9 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   const deleteElementModalStore = useDeleteElementModalContext()
   const {toggleShowModal, setTargetId} = deleteElementModalStore((state) => state)
 
+  // mouse postion
+  const [mousePos, setMousePos] = useState({x : number, y : number})
+  const [isDragging, toggleIsDragging] = useState(false)
 
   // layout
   const [layout, setLayout] = useState<Layout[]>([]);
@@ -81,6 +86,21 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
       });
     });
   }, [droppedItems]);
+
+  useEffect(() => {
+    if (isDragging == true) {
+
+      const handleMouseDown = (e : MouseEvent) => {
+        
+
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+    }
+
+
+
+  }, [setMousePos, isDragging])
 
 
   const handleDeleteHandle = (targetItemId : string) => {
@@ -114,12 +134,18 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
     onDragStart={() => {
       if (pausedLineId !== '') {
         pauseLine()
+        toggleIsDragging(true)
       }
+    }}
+
+    onDrag={() => {
+      console.log('debug mouse pos : ', mousePos)
     }}
 
   onDragStop={() => {
     setTimeout(() => {
       resumeLine();
+      toggleIsDragging(false)
     }, 200);
   }}
 

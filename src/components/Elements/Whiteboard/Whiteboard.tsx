@@ -74,7 +74,7 @@ export default function Whiteboard() {
         let dy = (my - ay) * speed;
 
         // apply axis locking
-        const AXIS_LOCK_RATIO = 6;
+        const AXIS_LOCK_RATIO = 4;
         if (Math.abs(dx) > AXIS_LOCK_RATIO * Math.abs(dy)) {
           dy = 0;
         } else if (Math.abs(dy) > AXIS_LOCK_RATIO * Math.abs(dx)) {
