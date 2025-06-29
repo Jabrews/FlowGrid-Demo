@@ -62,22 +62,35 @@ export default function Whiteboard() {
   useEffect(() => {
     if (!isScrolling) return;
 
-    const speed = 0.25;
-    const maxDelta = 25;
+    const speed = 0.35
+    const maxDelta = 20;
 
     const loop = () => {
       if (whiteboardRef.current) {
         const { x: ax, y: ay } = mouseAnchorPos;
         const { x: mx, y: my } = currentMousePosRef.current;
 
-        const dx = clamp((mx - ax) * speed, maxDelta);
-        const dy = clamp((my - ay) * speed, maxDelta);
+        let dx = (mx - ax) * speed;
+        let dy = (my - ay) * speed;
+
+        // apply axis locking
+        const AXIS_LOCK_RATIO = 6;
+        if (Math.abs(dx) > AXIS_LOCK_RATIO * Math.abs(dy)) {
+          dy = 0;
+        } else if (Math.abs(dy) > AXIS_LOCK_RATIO * Math.abs(dx)) {
+          dx = 0;
+        }
+
+        dx = clamp(dx, maxDelta);
+        dy = clamp(dy, maxDelta);
 
         whiteboardRef.current.scrollLeft -= dx;
         whiteboardRef.current.scrollTop -= dy;
       }
+
       animationRef.current = requestAnimationFrame(loop);
     };
+
 
     animationRef.current = requestAnimationFrame(loop);
     return () => {

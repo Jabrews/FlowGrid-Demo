@@ -37,20 +37,10 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   // Item factory context
   const store = useItemFactoryContext();
   const droppedItems = store((state) => state.droppedItems);
-  const setDroppedItems = store((state) => state.setDroppedItems);
-  const removeDroppedItem = store((state) => state.removeDroppedItem);
 
   // Connected Item factory Context
   const connectionStore = usePairFactoryContext()
   const connectedItems = connectionStore((state) => state.connectedItems)
-  const removeConnectedItem = connectionStore((state) => state.removeConnectedItem)
-
-  // Tracker Timer Menu Context
-  const timerMenuStore = useTimerMenuContext();
-  const timerTrackerItems = timerMenuStore((state) => state.timerTrackerItems);
-  const removeTimerTrackerItem = timerMenuStore((state) => state.removeTimerTrackerItem)
-  const removeTimerTracker = timerMenuStore((state) => state.removeTimerTracker)
-
 
   // connection Line Context
   const lineStore = useConnectionLinesContext()
