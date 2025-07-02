@@ -8,109 +8,104 @@ import ModalRenderer from '../ModalRenderer/ModalRenderer';
 import FakeCursor from '../FakeCursor/FakeCursor';
 
 // contexts
-import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
 import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
+import { useViewportPanStore } from '../../Context/ViewportPan/ViewportPanContext';
+import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
 
 export default function Whiteboard() {
   const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
-  const [mouseAnchorPos, setMouseAnchorPos] = useState({ x: 0, y: 0 });
-  const [isScrolling, toggleIsScrolling] = useState(false);
-  const whiteboardRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const currentMousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // helper: clamp
-  const clamp = (val: number, max: number) => Math.max(-max, Math.min(val, max));
 
-  // start scroll
+  // for loading whiteboard ref into viewport context
+const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
+
+  // viewport pan store
+  const viewportStore = useViewportPanStore() 
+  const {
+    isScrolling,
+    mouseAnchorPos,
+    setIsScrolling,
+    setMouseAnchorPos,
+    updateCurrentMousePos,
+    getScrollDelta, 
+  } = viewportStore((state) => state)
+
+  const droppedItemStore = useItemFactoryContext()
+  const {
+    whiteboardRef,
+    setWhiteboardRef,
+  } = droppedItemStore((state) => state)
+
   useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 1) {
-        e.preventDefault();
-        setMouseAnchorPos({ x: e.clientX, y: e.clientY });
-        toggleIsScrolling(true);
-      }
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (e.button === 1) {
-        e.preventDefault();
-        toggleIsScrolling(false);
-      }
-    };
-
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  // update current mouse position
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      currentMousePosRef.current = { x: e.clientX, y: e.clientY };
-    };
-    if (isScrolling) {
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
+    if (localWhiteboardRef != null) {
+      setWhiteboardRef(localWhiteboardRef);
     }
-  }, [isScrolling]);
+  }, [setWhiteboardRef, localWhiteboardRef]);
 
-  // animation loop scroll
-  useEffect(() => {
-    if (!isScrolling) return;
-
-    const speed = 0.35
-    const maxDelta = 20;
-
-    const loop = () => {
-      if (whiteboardRef.current) {
-        const { x: ax, y: ay } = mouseAnchorPos;
-        const { x: mx, y: my } = currentMousePosRef.current;
-
-        let dx = (mx - ax) * speed;
-        let dy = (my - ay) * speed;
-
-        // apply axis locking
-        const AXIS_LOCK_RATIO = 4;
-        if (Math.abs(dx) > AXIS_LOCK_RATIO * Math.abs(dy)) {
-          dy = 0;
-        } else if (Math.abs(dy) > AXIS_LOCK_RATIO * Math.abs(dx)) {
-          dx = 0;
+    useEffect(() => {
+      const handleMouseDown = (e: MouseEvent) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          setMouseAnchorPos({ x: e.clientX, y: e.clientY });
+          setIsScrolling(true);
         }
+      };
 
-        dx = clamp(dx, maxDelta);
-        dy = clamp(dy, maxDelta);
+      const handleMouseUp = (e: MouseEvent) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          setIsScrolling(false);
+        }
+      };
 
-        whiteboardRef.current.scrollLeft -= dx;
-        whiteboardRef.current.scrollTop -= dy;
+      const handleMouseMove = (e: MouseEvent) => {
+        updateCurrentMousePos({ x: e.clientX, y: e.clientY });
+      };
+
+      window.addEventListener('mousedown', handleMouseDown);
+      window.addEventListener('mouseup', handleMouseUp);
+      if (isScrolling) {
+        window.addEventListener('mousemove', handleMouseMove);
       }
 
-      animationRef.current = requestAnimationFrame(loop);
+      return () => {
+        window.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+      };
+    }, [isScrolling, setMouseAnchorPos, setIsScrolling, updateCurrentMousePos]);
+
+    useEffect(() => {
+      if (!isScrolling || !whiteboardRef?.current) return;
+
+      let frameId: number;
+
+      const scrollLoop = () => {
+        const delta = getScrollDelta();
+        whiteboardRef.current!.scrollLeft -= delta.x;
+        whiteboardRef.current!.scrollTop -= delta.y;
+        frameId = requestAnimationFrame(scrollLoop);
+      };
+
+      frameId = requestAnimationFrame(scrollLoop);
+
+      return () => cancelAnimationFrame(frameId);
+    }, [isScrolling, whiteboardRef, getScrollDelta]);
+
+
+    // line render debounce
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lineStore = useConnectionLinesContext();
+    const clearLineRects = lineStore((state) => state.clearLineRects);
+    const restoreLineRects = lineStore((state) => state.restoreLineRects);
+
+    const handleScroll = () => {
+      clearLineRects();
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        restoreLineRects();
+      }, 100);
     };
-
-
-    animationRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [isScrolling, mouseAnchorPos]);
-
-  // line render debounce
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lineStore = useConnectionLinesContext();
-  const clearLineRects = lineStore((state) => state.clearLineRects);
-  const restoreLineRects = lineStore((state) => state.restoreLineRects);
-
-  const handleScroll = () => {
-    clearLineRects();
-    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    scrollTimeoutRef.current = setTimeout(() => {
-      restoreLineRects();
-    }, 100);
-  };
 
   // resize handling
   useEffect(() => {
@@ -133,7 +128,7 @@ export default function Whiteboard() {
         cursor: isScrolling ? 'none' : 'default',
       }}
       onScroll={handleScroll}
-      ref={whiteboardRef}
+      ref={localWhiteboardRef}
     >
       <div
         ref={setNodeRef}
@@ -146,7 +141,7 @@ export default function Whiteboard() {
         }}
         className="droppable-div"
       >
-        <FakeCursor visible={isScrolling} position={mouseAnchorPos} />
+        <FakeCursor/>
         <ConnectionLineRenderer />
         <ModalRenderer />
         <WhiteboardGrid gridMargin={gridMargin} />

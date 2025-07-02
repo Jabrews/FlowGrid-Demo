@@ -1,17 +1,21 @@
-type FakeCursorProps = {
-  visible: boolean;
-  position: { x: number; y: number };
-};
+import { useViewportPanStore } from "../../Context/ViewportPan/ViewportPanContext";
 
-export default function FakeCursor({ visible, position }: FakeCursorProps) {
-  if (!visible) return null;
+export default function FakeCursor() {
+  
+  
+  const viewportPanStore = useViewportPanStore()
+  const {mouseAnchorPos, isScrolling} = viewportPanStore((state) => state)
+
+
+  if (!isScrolling) return null;
+
 
   return (
     <div
       style={{
         position: 'fixed',             // fixes it to viewport, not document flow
-        left: position.x,
-        top: position.y,
+        left: mouseAnchorPos.x,
+        top: mouseAnchorPos.y,
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none',
         zIndex: 9999,

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState} from 'react';
 import GridLayout from 'react-grid-layout';
 import type { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -8,7 +8,6 @@ import Tracker from '../Tracker/Tracker';
 import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
 
-
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext'
 
 // Item Factory
@@ -17,16 +16,11 @@ import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryCont
 // Connected Item Factory
 import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
 
-// Tracker Menu Context
-import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext';
-
 // Line Store
 import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
 
 // Delete Element Modal Context
 import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
-import { use } from 'framer-motion/client';
-import { number } from 'framer-motion';
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -39,6 +33,8 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   // Item factory context
   const store = useItemFactoryContext();
   const droppedItems = store((state) => state.droppedItems);
+  const whiteboardRef = store((state) => state.whiteboardRef);
+  const relativeMousePos = store((state) => state.relativeMousePos)
 
   // Connected Item factory Context
   const connectionStore = usePairFactoryContext()
@@ -58,7 +54,6 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   const {toggleShowModal, setTargetId} = deleteElementModalStore((state) => state)
 
   // mouse postion
-  const [mousePos, setMousePos] = useState({x : number, y : number})
   const [isDragging, toggleIsDragging] = useState(false)
 
   // layout
@@ -67,41 +62,102 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
 
   useEffect(() => {
     setLayout((prevLayout) => {
-      // map existing layout by item id
       const layoutMap = new Map(prevLayout.map((item) => [item.i, item]));
 
-      // build new layout, preserving old positions
+      const whiteboardRect = whiteboardRef?.current?.getBoundingClientRect();
+
       return droppedItems.map((item, index) => {
         const existing = layoutMap.get(item.id);
         if (existing) return existing;
 
-        // new item → give it a default position
+        // default grid cell size
+        const defaultW = 3;
+        const defaultH = 2;
+        const cols = 24;
+        const colWidth = 125; // 3000 / 24 cols
+        const rowHeight = 250;
+        const marginX = gridMargin[0]; // e.g., 100
+        const marginY = gridMargin[1]; // e.g., 150
+
+        // use relative mouse position → convert to grid coords
+        let gridX = (index % 6) * 4; // fallback default
+        let gridY = Math.floor(index / 6) * 2;
+
+        if (relativeMousePos && whiteboardRect) {
+          const pxX = relativeMousePos.x;
+          const pxY = relativeMousePos.y;
+
+          // 🔢 Convert pixel values to grid cell units
+          gridX = Math.floor(pxX / (colWidth + marginX));
+          gridY = Math.floor(pxY / (rowHeight + marginY));
+        }
+
         return {
           i: item.id,
-          x: (index % 6) * 4,
-          y: Math.floor(index / 6) * 2,
-          w: 3,
-          h: 2,
+          x: gridX,
+          y: gridY,
+          w: defaultW,
+          h: defaultH,
         };
       });
     });
-  }, [droppedItems]);
+  }, [droppedItems, whiteboardRef, gridMargin]);
 
   useEffect(() => {
-    if (isDragging == true) {
+    
+      
+  if (isDragging && whiteboardRef?.current) {
+    let animationFrameId: number;
 
-      const handleMouseDown = (e : MouseEvent) => {
-        
+    const SCROLL_SPEED = 30; // Adjust speed to taste
+    const edge = 50;
 
-      }
+    const handleMouseMove = (e: MouseEvent) => {
+      const mouse = {
+        x: e.clientX,
+        y: e.clientY,
+      };
 
-      document.addEventListener('mousemove', handleMouseMove)
-    }
+      const ref = whiteboardRef.current;
+      if (!ref) return;
 
+      const rect = ref.getBoundingClientRect();
 
+      const nearEdge = {
+        left: mouse.x - rect.left < edge,
+        right: rect.right - mouse.x < edge,
+        top: mouse.y - rect.top < edge,
+        bottom: rect.bottom - mouse.y < edge,
+      };
 
-  }, [setMousePos, isDragging])
+      handleScrollingWhiteboard(nearEdge);
+    };
 
+    const handleScrollingWhiteboard = (nearEdge) => {
+      const ref = whiteboardRef.current;
+      if (!ref) return;
+
+      const scroll = () => {
+        if (nearEdge.left) ref.scrollLeft -= SCROLL_SPEED;
+        if (nearEdge.right) ref.scrollLeft += SCROLL_SPEED;
+        if (nearEdge.top) ref.scrollTop -= SCROLL_SPEED;
+        if (nearEdge.bottom) ref.scrollTop += SCROLL_SPEED;
+
+        animationFrameId = requestAnimationFrame(scroll);
+      };
+
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }
+}, [isDragging, whiteboardRef]);
 
   const handleDeleteHandle = (targetItemId : string) => {
 
@@ -138,10 +194,6 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
       }
     }}
 
-    onDrag={() => {
-      console.log('debug mouse pos : ', mousePos)
-    }}
-
   onDragStop={() => {
     setTimeout(() => {
       resumeLine();
@@ -166,6 +218,8 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
       pointerEvents: 'none',
     }}
   >
+
+
     {connectedItems.map((pair, idx) => {
       const trackerEl = elementRefs.current[pair.tracker.id];
       const itemEl = elementRefs.current[pair.item.id];

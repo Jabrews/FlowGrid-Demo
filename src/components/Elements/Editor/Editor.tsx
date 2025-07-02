@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect, useRef} from 'react'
 
 
 import '../../../styles/main.css';
@@ -10,9 +10,12 @@ import { TimeoutModalContextProvider } from '../../Context/Modals/TimeoutModalCo
 // modal : Delete Element
 import { DeleteElementModalContextProvider } from '../../Context/Modals/DeleteElementModalContext';
 
+// white board utlil contexts
+import { ViewportPanContextProvider} from '../../Context/ViewportPan/ViewportPanContext';
 
 // Item Factory
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
+import type { DroppedMousePos } from '../../Context/ItemFactory/ItemFactoryContext';
 
 // Pair Factory
 import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
@@ -57,6 +60,10 @@ export default function Editor() {
   const store = useItemFactoryContext()
   const droppedItems = store((state) => state.droppedItems)
   const addDroppedItem = store((state) => state.addDroppedItem)
+  const toggleUserAddingItem = store((state) => state.toggleUserAddingItem)
+  const userAddingItem = store((state) => state.userAddingItem)
+  const setItemDroppedMousePos = store((state) => state.setItemDroppedMousePos)
+  const calcRelativeMousePos = store((state) => state.calcRelativeMousePos)
 
   //ItemPair Store 
   const pairStore = usePairFactoryContext()
@@ -74,6 +81,29 @@ export default function Editor() {
   const pauseLine = lineStore((state) => state.pauseLine)
   const resumeLine = lineStore((state) => state.resumeLine)
 
+  // useEffect for tracking where mouse ends, set when adding
+  // --dropped item
+ 
+  useEffect(() => {
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (userAddingItem === true) {
+        console.log('mouse got up after dragging item : ', e);
+        const newDroppedPos : DroppedMousePos = {
+          x : e.clientX,
+          y : e.clientY
+        }
+        setItemDroppedMousePos(newDroppedPos)
+        toggleUserAddingItem(false)
+        calcRelativeMousePos()
+      }
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => document.removeEventListener('mouseup', handleMouseUp);
+  }, [userAddingItem]);
+
+
 
   return (
 
@@ -89,6 +119,8 @@ export default function Editor() {
 
           onDragStart={(event) => {
 
+            console.log('drag true')
+            toggleUserAddingItem(true)
 
           // get dragged objects id
             const id = event.active.id
@@ -103,11 +135,8 @@ export default function Editor() {
 
           }}
 
-
-  
-
           // called when dragging ends (drop or cancel)
-          onDragEnd={({ over, active }) => {
+          onDragEnd={({ over, active }) => {          
 
             resumeLine()
                 
@@ -128,7 +157,6 @@ export default function Editor() {
                     trackable: trackableItems.includes(String(activeType)),
                     tracker : activeType == 'Tracker' ? true : false,
                     connected: false,
-                    parentConnectionId: '',
                   })
                   setActiveId(null);
                   setActiveType(null);
@@ -158,16 +186,24 @@ export default function Editor() {
 
           // clear the active id to end drag preview
           setActiveId(null);
+
+            console.log('drag end')
+
         }}
 
           onDragCancel={() => {
             setActiveId(null);
             setActiveType(null);
+
+            console.log('drag end')
+            toggleUserAddingItem(false)             
+
           }}        
           >
 
-
-          <Whiteboard/>
+          <ViewportPanContextProvider>
+            <Whiteboard/>
+          </ViewportPanContextProvider>
           <SideDropper />
           <DragOverlay>
             {activeId ? <DragPreview type={String(activeType)} /> : null}
