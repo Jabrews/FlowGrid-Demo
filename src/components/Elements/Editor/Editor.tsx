@@ -88,14 +88,12 @@ export default function Editor() {
 
     const handleMouseUp = (e: MouseEvent) => {
       if (userAddingItem === true) {
-        console.log('mouse got up after dragging item : ', e);
         const newDroppedPos : DroppedMousePos = {
           x : e.clientX,
           y : e.clientY
         }
         setItemDroppedMousePos(newDroppedPos)
         toggleUserAddingItem(false)
-        calcRelativeMousePos()
       }
     };
 
@@ -151,13 +149,16 @@ export default function Editor() {
               }
 
               if (activeId && activeType) {
+
                 addDroppedItem({
                     id: String(activeId),
                     type: String(activeType),
                     trackable: trackableItems.includes(String(activeType)),
                     tracker : activeType == 'Tracker' ? true : false,
                     connected: false,
+                    placementPos : calcRelativeMousePos(),
                   })
+                  console.log('debug : ', calcRelativeMousePos())
                   setActiveId(null);
                   setActiveType(null);
               }

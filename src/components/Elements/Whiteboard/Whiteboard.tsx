@@ -13,8 +13,13 @@ import { useViewportPanStore } from '../../Context/ViewportPan/ViewportPanContex
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
 
 export default function Whiteboard() {
-  const [gridMargin, setGridMargin] = useState<[number, number]>([100, 150]);
-
+  const droppedItemStore = useItemFactoryContext()
+  const gridMargin = droppedItemStore((state) => state.gridMargin)
+  const updateGridMarginFromWindow = droppedItemStore((state) => state.updateGridMarginFromWindow)
+  const {
+    whiteboardRef,
+    setWhiteboardRef,
+  } = droppedItemStore((state) => state)
 
   // for loading whiteboard ref into viewport context
 const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
@@ -30,11 +35,6 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
     getScrollDelta, 
   } = viewportStore((state) => state)
 
-  const droppedItemStore = useItemFactoryContext()
-  const {
-    whiteboardRef,
-    setWhiteboardRef,
-  } = droppedItemStore((state) => state)
 
   useEffect(() => {
     if (localWhiteboardRef != null) {
@@ -107,15 +107,17 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
       }, 100);
     };
 
-  // resize handling
-  useEffect(() => {
-    const handleResize = () => {
-      setGridMargin(window.innerWidth < 768 ? [50, 135] : [70, 155]);
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    useEffect(() => {
+      const handleResize = () => {
+        updateGridMarginFromWindow();
+      };
+
+      window.addEventListener('resize', handleResize);
+      handleResize();
+
+      return () => window.removeEventListener('resize', handleResize);
+    }, [updateGridMarginFromWindow]);
+
 
   const { setNodeRef } = useDroppable({ id: 'droppable-1' });
 
@@ -126,6 +128,7 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
         width: '100vw',
         height: '100vh',
         cursor: isScrolling ? 'none' : 'default',
+        overflow : 'auto'
       }}
       onScroll={handleScroll}
       ref={localWhiteboardRef}
@@ -138,6 +141,7 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
           width: '2000px',
           height: '2000px',
           background: 'grey',
+          overflow : 'none'
         }}
         className="droppable-div"
       >

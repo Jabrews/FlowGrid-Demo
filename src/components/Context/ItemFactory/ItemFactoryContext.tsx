@@ -9,6 +9,7 @@ export type DroppedItem = {
   trackable: boolean;
   tracker: boolean;
   connected: boolean;
+  placementPos : {x : number, y : number}
 };
 
 export type DroppedItemRect = {
@@ -44,8 +45,11 @@ type ItemFactoryStore = {
   itemDroppedMousePos : DroppedMousePos
   setItemDroppedMousePos : (newPos : DroppedMousePos) => void
 
-  relativeMousePos :  {x : number, y : number} | null
-  calcRelativeMousePos : () => void
+  calcRelativeMousePos : () => {x: number, y : number} 
+
+  gridMargin: [number, number];
+  updateGridMarginFromWindow: () => void;
+
 
 };
 
@@ -75,24 +79,41 @@ const createItemFactoryStore = () =>
     setItemDroppedMousePos: (newPos: DroppedMousePos) =>
       set(() => ({ itemDroppedMousePos: newPos })),
 
-    relativeMousePos: null,
     calcRelativeMousePos: () => {
       const whiteboardRef = get().whiteboardRef;
       const mousePos = get().itemDroppedMousePos;
       const whiteboardRect = whiteboardRef?.current?.getBoundingClientRect();
 
       if (!whiteboardRect) {
-        set(() => ({ relativeMousePos: null }));
-        return; 
+        return {x : 0, y : 0}; 
       }
 
       const relativeX = mousePos.x - whiteboardRect.left;
       const relativeY = mousePos.y - whiteboardRect.top;
 
-      set(() => ({
-        relativeMousePos: { x: relativeX, y: relativeY },
-      }));
+      // grid settings
+      const colWidth = 125;
+      const rowHeight = 250;
+      const marginX = get().gridMargin[0]; 
+      const marginY = get().gridMargin[1];
+
+      const gridX = Math.floor(relativeX / (colWidth + marginX));
+      const gridY = Math.floor(relativeY / (rowHeight + marginY));
+      
+      console.log('grid x : ', gridX)
+
+      return {x : gridX, y : gridY}
+
     },
+
+    gridMargin: [100, 150], 
+
+    updateGridMarginFromWindow: () => {
+      const isMobile = window.innerWidth < 768;
+      const newMargin: [number, number] = isMobile ? [50, 135] : [70, 155];
+      set(() => ({ gridMargin: newMargin }));
+    },
+
 
 
   }));

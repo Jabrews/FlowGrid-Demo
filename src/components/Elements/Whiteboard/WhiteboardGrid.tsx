@@ -34,7 +34,6 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   const store = useItemFactoryContext();
   const droppedItems = store((state) => state.droppedItems);
   const whiteboardRef = store((state) => state.whiteboardRef);
-  const relativeMousePos = store((state) => state.relativeMousePos)
 
   // Connected Item factory Context
   const connectionStore = usePairFactoryContext()
@@ -61,47 +60,33 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
 
 
   useEffect(() => {
-    setLayout((prevLayout) => {
-      const layoutMap = new Map(prevLayout.map((item) => [item.i, item]));
+  setLayout((prevLayout) => {
+    const layoutMap = new Map(prevLayout.map((item) => [item.i, item]));
 
-      const whiteboardRect = whiteboardRef?.current?.getBoundingClientRect();
+    return droppedItems.map((item, index) => {
+      const existing = layoutMap.get(item.id);
+      if (existing && !item.placementPos) {
+        console.log('returning cus existing')
+        return existing
+      };
 
-      return droppedItems.map((item, index) => {
-        const existing = layoutMap.get(item.id);
-        if (existing) return existing;
+      const defaultW = 3;
+      const defaultH = 2;
 
-        // default grid cell size
-        const defaultW = 3;
-        const defaultH = 2;
-        const cols = 24;
-        const colWidth = 125; // 3000 / 24 cols
-        const rowHeight = 250;
-        const marginX = gridMargin[0]; // e.g., 100
-        const marginY = gridMargin[1]; // e.g., 150
+      const gridX = item.placementPos?.x ?? (index % 6) * 4;
+      const gridY = item.placementPos?.y ?? Math.floor(index / 6) * 2;
 
-        // use relative mouse position → convert to grid coords
-        let gridX = (index % 6) * 4; // fallback default
-        let gridY = Math.floor(index / 6) * 2;
-
-        if (relativeMousePos && whiteboardRect) {
-          const pxX = relativeMousePos.x;
-          const pxY = relativeMousePos.y;
-
-          // 🔢 Convert pixel values to grid cell units
-          gridX = Math.floor(pxX / (colWidth + marginX));
-          gridY = Math.floor(pxY / (rowHeight + marginY));
-        }
-
-        return {
-          i: item.id,
-          x: gridX,
-          y: gridY,
-          w: defaultW,
-          h: defaultH,
-        };
+      return {
+        i: item.id,
+        x: gridX,
+        y: gridY,
+        w: defaultW,
+        h: defaultH,
+      };
       });
     });
-  }, [droppedItems, whiteboardRef, gridMargin]);
+  }, [droppedItems]);
+
 
   useEffect(() => {
     
@@ -167,12 +152,11 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
 
   return (
     <div style={{
-    width: '200%',
+    width: '100%',
     minHeight: '100%', // makes sure it's tall
     overflow: 'none',
     position: 'relative',
     background: 'grey',
-    margin: '5%',
     }}>
     <GridLayout
       layout={layout}
