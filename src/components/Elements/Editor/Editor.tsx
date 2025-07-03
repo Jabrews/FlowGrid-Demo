@@ -158,7 +158,6 @@ export default function Editor() {
                     connected: false,
                     placementPos : calcRelativeMousePos(),
                   })
-                  console.log('debug : ', calcRelativeMousePos())
                   setActiveId(null);
                   setActiveType(null);
               }

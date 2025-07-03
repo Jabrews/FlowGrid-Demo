@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useState, useRef} from 'react';
 import GridLayout from 'react-grid-layout';
 import type { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -34,6 +34,8 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   const store = useItemFactoryContext();
   const droppedItems = store((state) => state.droppedItems);
   const whiteboardRef = store((state) => state.whiteboardRef);
+  const whiteboardGridRef = store((state) => state.whiteboardGridRef)
+  const setWhiteboardGridRef = store((state) => state.setWhiteboardGridRef)
 
   // Connected Item factory Context
   const connectionStore = usePairFactoryContext()
@@ -58,6 +60,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   // layout
   const [layout, setLayout] = useState<Layout[]>([]);
 
+  const localWhiteboardGridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
   setLayout((prevLayout) => {
@@ -73,13 +76,15 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
       const defaultW = 3;
       const defaultH = 2;
 
-      const gridX = item.placementPos?.x ?? (index % 6) * 4;
-      const gridY = item.placementPos?.y ?? Math.floor(index / 6) * 2;
+      // const gridX = item.placementPos?.x ?? (index % 6) * 4;
+      // const gridY = item.placementPos?.y ?? Math.floor(index / 6) * 2;
+
+      console.log('debug :  x : ', item.placementPos.x, ' y : ', item.placementPos.y)
 
       return {
         i: item.id,
-        x: gridX,
-        y: gridY,
+        x: item.placementPos.x,
+        y: item.placementPos.y,
         w: defaultW,
         h: defaultH,
       };
@@ -144,6 +149,12 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
   }
 }, [isDragging, whiteboardRef]);
 
+  useEffect(() => {
+    if (localWhiteboardGridRef != null) {
+      setWhiteboardGridRef(localWhiteboardGridRef);
+    }
+  }, [setWhiteboardGridRef, localWhiteboardGridRef]);
+
   const handleDeleteHandle = (targetItemId : string) => {
 
     toggleShowModal(true)
@@ -157,7 +168,9 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
     overflow: 'none',
     position: 'relative',
     background: 'grey',
-    }}>
+    }}
+    ref={localWhiteboardGridRef} 
+    >
     <GridLayout
       layout={layout}
       compactType={null}
@@ -184,61 +197,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
       toggleIsDragging(false)
     }, 200);
   }}
-
-
-
     >
-
-    
-
-  <svg
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      zIndex: 1000,
-      pointerEvents: 'none',
-    }}
-  >
-
-
-    {connectedItems.map((pair, idx) => {
-      const trackerEl = elementRefs.current[pair.tracker.id];
-      const itemEl = elementRefs.current[pair.item.id];
-
-      if (itemEl && trackerEl) {
-        const trackerInput = trackerEl.querySelector('.tracker-input');
-        const itemOutput = itemEl.querySelector('.tracker-output');
-        const inputSvg = trackerInput?.querySelector('svg');
-        const outputSvg = itemOutput?.querySelector('svg');
-        const inputRect = inputSvg?.getBoundingClientRect();
-        const outputRect = outputSvg?.getBoundingClientRect();
-
-        if (inputRect && outputRect) {
-          const x1 = outputRect.left + outputRect.width / 2;
-          const y1 = outputRect.top + outputRect.height / 2;
-          const x2 = inputRect.left + inputRect.width / 2;
-          const y2 = inputRect.top + inputRect.height / 2;
-
-          return (
-            <line
-              key={pair.tracker.id + '-' + pair.item.id + '-' + idx}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke="black"
-              strokeWidth={2}
-            />
-          );
-        }
-      }
-
-      return null;
-    })}
-  </svg>
 
 
 
@@ -273,11 +232,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
           </div>
         </div>
 
-          
-
       ))}
-
-            
 
 
 

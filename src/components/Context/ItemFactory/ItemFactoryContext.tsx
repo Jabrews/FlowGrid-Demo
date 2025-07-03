@@ -38,6 +38,9 @@ type ItemFactoryStore = {
 
   whiteboardRef: RefObject<HTMLDivElement | null> | null;
   setWhiteboardRef: (ref: RefObject<HTMLDivElement | null>) => void;
+
+  whiteboardGridRef : RefObject<HTMLDivElement | null> | null;
+  setWhiteboardGridRef : (ref: RefObject<HTMLDivElement | null>) => void
   
   userAddingItem : boolean,
   toggleUserAddingItem : (toggleStatus : boolean) => void
@@ -80,32 +83,32 @@ const createItemFactoryStore = () =>
       set(() => ({ itemDroppedMousePos: newPos })),
 
     calcRelativeMousePos: () => {
-      const whiteboardRef = get().whiteboardRef;
-      const mousePos = get().itemDroppedMousePos;
-      const whiteboardRect = whiteboardRef?.current?.getBoundingClientRect();
+    const whiteboard = get().whiteboardGridRef?.current;
+    const mousePos = get().itemDroppedMousePos;
 
-      if (!whiteboardRect) {
-        return {x : 0, y : 0}; 
-      }
+    if (!whiteboard) return { x: 0, y: 0 };
 
-      const relativeX = mousePos.x - whiteboardRect.left;
-      const relativeY = mousePos.y - whiteboardRect.top;
+    const scrollLeft = whiteboard.scrollLeft;
+    const scrollTop = whiteboard.scrollTop;
 
-      // grid settings
-      const colWidth = 125;
-      const rowHeight = 250;
-      const marginX = get().gridMargin[0]; 
-      const marginY = get().gridMargin[1];
+    const offsetX = mousePos.x + scrollLeft - whiteboard.getBoundingClientRect().left;
+    const offsetY = mousePos.y + scrollTop - whiteboard.getBoundingClientRect().top;
 
-      const gridX = Math.floor(relativeX / (colWidth + marginX));
-      const gridY = Math.floor(relativeY / (rowHeight + marginY));
-      
-      console.log('grid x : ', gridX)
+    // now divide by column size
+    const colWidth = 75;
+    const rowHeight = 250;
+    const marginX = get().gridMargin[0];
+    const marginY = get().gridMargin[1];
 
-      return {x : gridX, y : gridY}
+    const gridX = Math.floor((offsetX + marginX / 2) / (colWidth + marginX));
+    const gridY = Math.floor((offsetY + marginY / 2) / (rowHeight + marginY));
+
+return { x: gridX, y: gridY };
+
 
     },
-
+    whiteboardGridRef : null,
+    setWhiteboardGridRef : (ref) => set({whiteboardGridRef : ref}),
     gridMargin: [100, 150], 
 
     updateGridMarginFromWindow: () => {
