@@ -7,8 +7,8 @@
 @use 'TrackerMenu';
 @use 'TrackerMenuFields';
 @use 'ConnectionModal';
+@use 'Note';
 
-/* Minimal nCSS Reset */
 * {
     margin: 0;
     padding: 0;

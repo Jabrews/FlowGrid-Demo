@@ -5,6 +5,7 @@ import 'react-grid-layout/css/styles.css';
 
 import Timer from '../Timer/Timer';
 import Tracker from '../Tracker/Tracker';
+import Note from '../Note/Note';
 import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
 
@@ -217,7 +218,7 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
             {item.type === 'Timer' && <Timer id={item.id} />}
             {item.type === 'Tracker' && <Tracker id={item.id} />}
             {item.type === 'Chart' && <div>Chart Component</div>}
-            {item.type === 'Note' && <div>Note Component</div>}
+            {item.type === 'Note' && <Note id={item.id} />}
             {!['Timer', 'Tracker', 'Chart', 'Note'].includes(item.type) && <p>Unknown component</p>}
 
             {/* Only trackable items get the Input/Output */}

@@ -1,0 +1,77 @@
+
+.note-parent-container {
+    width: 100%; 
+    display: flex;
+    height : 30em;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+
+    /* title */
+    h1 {
+        font-size: 1.5em;
+        font-weight: 600;
+    }
+
+    .note-container {
+        height: 100%; 
+        width: 15em;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background-color: rgb(65, 15, 15);
+        padding: 0.3em;
+
+        .note-toolbar-container {
+            background-color: red;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            /* PLACEHOLDER LOGOS */
+            p {
+                padding: 1em;
+            }
+        }
+
+
+        .note-area-container {
+            height: 100%;
+            background-color: rgb(223, 146, 146);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-items: center;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            padding: 1em;
+
+            .note-area-item {
+                width: 100%;
+                align-self: flex-start;
+                display: grid;
+                grid-template-columns: 1fr 3fr; 
+                font-size: clamp(0.80em, 2vw, 1rem);
+            }
+
+            .note-area-add-item-btn {
+                border: none;
+                padding: 0.5em;
+                font-size: 1em;
+                font-weight: 600;
+                width: 80%;
+                margin: 1em;
+                border: 1px solid black;
+
+                &:hover {
+                    background-color: gray;
+                }
+            }
+
+        }
+    }
+
+
+}

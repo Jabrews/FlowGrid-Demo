@@ -5,8 +5,8 @@ export default function DroppableItemList() {
     <div className="drop-item-list-container">
       <DraggableItem id='Timer' type='Timer'/>
       <DraggableItem id='Chart' type='Chart'/>
-      <DraggableItem id='Note' type='Note'/>
       <DraggableItem id='Tracker' type='Tracker'/>
+      <DraggableItem id='Note' type='Note' />
     </div>
   );
 }
