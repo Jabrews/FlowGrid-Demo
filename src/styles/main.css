@@ -490,69 +490,192 @@
   justify-self: flex-end;
 }
 
+.note-list-container {
+  width: 20em;
+  height: 20em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(158, 158, 158);
+  position: relative;
+}
+.note-list-container .note-toolbar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3em;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+.note-list-container .note-toolbar-container .add-note-btn {
+  margin-left: 0.5em;
+  width: 5%;
+  text-align: center;
+  color: white;
+  padding: 0.1em;
+  background-color: black;
+  border-radius: 10em;
+  font-size: em;
+}
+.note-list-container .note-toolbar-container .navigate-note-btn {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+  background-color: black;
+  color: white;
+  border-radius: 30%;
+}
+.note-list-container .note-toolbar-container .navigate-note-btn .navigate-left-btn {
+  padding-left: 0.1em;
+  margin-right: 0.4em;
+  font-size: 0.8em;
+}
+.note-list-container .note-toolbar-container .navigate-note-btn .navigate-left-btn:hover {
+  color: rgb(167, 167, 167);
+}
+.note-list-container .note-toolbar-container .navigate-note-btn .navigate-right-btn {
+  padding-right: 0.1em;
+  margin-left: 0.4em;
+  font-size: 0.8em;
+}
+.note-list-container .note-toolbar-container .navigate-note-btn .navigate-right-btn:hover {
+  color: rgb(167, 167, 167);
+}
+.note-list-container .note-list-item-container {
+  width: 100%;
+  height: 100%;
+  padding-top: 3em;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .note-parent-container {
   width: 100%;
   display: flex;
-  height: 30em;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
   flex-direction: column;
-  /* title */
+  align-items: flex-start;
+  justify-content: center;
 }
 .note-parent-container h1 {
+  align-self: center;
   font-size: 1.5em;
+  font-weight: 525;
+}
+.note-parent-container .title {
+  text-align: center;
+  align-self: center;
+  justify-self: center;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 1.6em;
   font-weight: 600;
 }
-.note-parent-container .note-container {
-  height: 100%;
-  width: 15em;
-  overflow: hidden;
+
+.note-area-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+.note-area-container .note-area-item-container {
   display: flex;
   flex-direction: column;
-  background-color: rgb(65, 15, 15);
-  padding: 0.3em;
+  align-items: stretch;
+  justify-content: center;
 }
-.note-parent-container .note-container .note-toolbar-container {
-  background-color: red;
+.note-area-container .note-area-add-item-btn {
+  border: none;
+  padding: 0.5em;
+  border-radius: 1em;
+  background-color: ghostwhite;
+  font-size: 0.8em;
+  font-weight: 500;
+  align-self: center;
+  margin-bottom: 1em;
+  margin-left: 5em;
+  cursor: pointer;
+}
+.note-area-container .note-area-add-item-btn:hover {
+  background-color: white;
+}
+
+.note-area-item {
+  position: relative;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  /* PLACEHOLDER LOGOS */
-}
-.note-parent-container .note-container .note-toolbar-container p {
-  padding: 1em;
-}
-.note-parent-container .note-container .note-area-container {
-  height: 100%;
-  background-color: rgb(223, 146, 146);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-items: center;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  padding: 1em;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  margin-left: 1em;
+  /* bullet */
+  /* checkbox / input */
 }
-.note-parent-container .note-container .note-area-container .note-area-item {
-  width: 100%;
-  align-self: flex-start;
-  display: grid;
-  grid-template-columns: 1fr 3fr;
-  font-size: clamp(0.8em, 2vw, 1rem);
+.note-area-item p {
+  margin-right: 0.4em;
+  margin-left: 0.8em;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: black;
 }
-.note-parent-container .note-container .note-area-container .note-area-add-item-btn {
+.note-area-item input {
+  margin-right: 0.4em;
+  margin-left: 0.8em;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: black;
+}
+.note-area-item textarea {
+  background-color: transparent;
+  resize: vertical;
   border: none;
-  padding: 0.5em;
-  font-size: 1em;
-  font-weight: 600;
-  width: 80%;
-  margin: 1em;
-  border: 1px solid black;
+  color: black;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  height: 100%;
+  width: 19em;
 }
-.note-parent-container .note-container .note-area-container .note-area-add-item-btn:hover {
-  background-color: gray;
+.note-area-item textarea:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  text-decoration: underline;
+}
+.note-area-item textarea::placeholder {
+  color: rgb(68, 68, 68);
+}
+
+.note-area-item-delete-icon {
+  position: absolute;
+  align-self: center;
+  left: -0.4em;
+  top: 0.1em;
+  background-color: transparent;
+}
+.note-area-item-delete-icon button {
+  border: none;
+  background-color: transparent;
+  font-size: 1.2em;
+  cursor: pointer;
+  border-radius: 1em;
+}
+.note-area-item-delete-icon button .delete-icon {
+  font-size: 0.5em;
+  color: red;
+}
+.note-area-item-delete-icon button .delete-icon:hover {
+  color: black;
 }
 
 * {

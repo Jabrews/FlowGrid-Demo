@@ -1,39 +1,44 @@
-import {useState} from 'react'
-import {motion} from 'framer-motion'
+import {useState} from 'react';
+import { useNoteListContext } from '../../Context/ElementContext/NoteListContext';
 
 // components
-import NoteToolBar from './NoteToolBar';
 import NoteArea from './NoteArea';
 
 type NoteProps = {
-    id : string
+    noteId : string
+    isHovered : boolean
+    noteListId : string
+    title : string
 }
 
-export default function Note({id} : NoteProps) {
-    const [isHovered, setIsHovered] = useState(false); 
+export default function Note({noteListId, noteId, isHovered, title} : NoteProps) {
+    const [placeholderTitle , setPlaceholderTitle] = useState<string>(title);
+    const noteListStore = useNoteListContext();
+    const changeNoteObjectTitle = noteListStore((state) => state.changeNoteObjectTitle);
+    
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPlaceholderTitle(e.target.value);
+        changeNoteObjectTitle(noteListId, noteId, e.target.value);
+    }
+
 
     return (
-        <motion.div
+        <div
         className='note-parent-container' 
-        key={id}
-        onHoverStart={() => setIsHovered(true)} 
-        onHoverEnd={() => setIsHovered(false)}
-        onClick={() => setIsHovered(true)}
+        key={noteId}
         >
             {/* Note Header */}
-            <h1> Title </h1>
+            <input placeholder={placeholderTitle} value={placeholderTitle} className='title' onChange={(e) => handleTitleChange(e)}/>
+
             <div className='note-container'
             style={{gridTemplateColumns: isHovered ? '1fr' : '1fr 5fr'}} 
             > 
-                {isHovered && (
-                <NoteToolBar parentId={id}/>
-                )}
-                <NoteArea parentId={id} isHovered={isHovered} />
+                <NoteArea noteListId={noteListId} noteId={noteId} isHovered={isHovered} />
             </div>
 
 
 
-        </motion.div>
+        </div>
     )
 
 }

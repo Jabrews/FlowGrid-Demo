@@ -12,6 +12,9 @@ import { useConnectionLinesContext } from '../../Context/ConnectionLines/Connect
 import { useViewportPanStore } from '../../Context/ViewportPan/ViewportPanContext';
 import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
 
+// component contexts
+import { NoteListContextProvider } from '../../Context/ElementContext/NoteListContext';
+
 export default function Whiteboard() {
   const droppedItemStore = useItemFactoryContext()
   const gridMargin = droppedItemStore((state) => state.gridMargin)
@@ -123,8 +126,7 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div
-      className="whiteboard"
-      style={{
+      className="whiteboard" style={{
         width: '100vw',
         height: '100vh',
         cursor: isScrolling ? 'none' : 'default',
