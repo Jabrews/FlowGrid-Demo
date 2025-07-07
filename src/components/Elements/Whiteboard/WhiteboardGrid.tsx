@@ -8,6 +8,7 @@ import Tracker from '../Tracker/Tracker';
 import NoteList from '../Note/NoteList';
 import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
+import Table from '../Table/Table'
 
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext'
 
@@ -217,10 +218,10 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
             {/* Dynamically render components and pass item.id to Timer */}
             {item.type === 'Timer' && <Timer id={item.id} />}
             {item.type === 'Tracker' && <Tracker id={item.id} />}
-            {item.type === 'Chart' && <div>Chart Component</div>}
             {item.type === 'Note-List' &&  <NoteList id={item.id} />}
+            {item.type === 'Table' && <Table id={item.id} />}
           
-            {!['Timer', 'Tracker', 'Chart', 'Note-List'].includes(item.type) && <p>Unknown component</p>}
+            {!['Timer', 'Tracker', 'Chart', 'Note-List', 'Table'].includes(item.type) && <p>Unknown component</p>}
 
             {/* Only trackable items get the Input/Output */}
             {item.trackable && (

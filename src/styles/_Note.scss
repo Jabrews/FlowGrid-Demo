@@ -161,6 +161,7 @@
         font-size: 1.2em;
         font-weight: 500;
         color: black;     
+        background-color: transparent;
     }
 
     textarea {
@@ -173,12 +174,18 @@
         overflow-wrap: break-word;
         height: 100%;
         width: 19em;
+        
+        &:hover {
+            background-color: transparent;
+            border: none;
+        }
 
         &:focus {
             outline: none;
             border: none;
             box-shadow: none;
             text-decoration: underline;
+            background-color: transparent;
         }
 
         &::placeholder {

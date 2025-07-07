@@ -11,6 +11,8 @@ import { ConnectionLinesContextProvider } from "./components/Context/ConnectionL
 
 // component contexts 
 import { NoteListContextProvider } from "./components/Context/ElementContext/NoteListContext";
+import { TableContextProvider} from './components/Context/ElementContext/TableContext'
+
 
 export default function App() {
 
@@ -20,7 +22,9 @@ export default function App() {
           <PairFactoryyProvider>
             <ConnectionLinesContextProvider>
               <NoteListContextProvider>
+              <TableContextProvider>
                 <Editor/>
+              </TableContextProvider>
               </NoteListContextProvider>
             </ConnectionLinesContextProvider>
           </PairFactoryyProvider>

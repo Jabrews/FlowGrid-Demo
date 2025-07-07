@@ -634,6 +634,7 @@
   font-size: 1.2em;
   font-weight: 500;
   color: black;
+  background-color: transparent;
 }
 .note-area-item textarea {
   background-color: transparent;
@@ -646,11 +647,16 @@
   height: 100%;
   width: 19em;
 }
+.note-area-item textarea:hover {
+  background-color: transparent;
+  border: none;
+}
 .note-area-item textarea:focus {
   outline: none;
   border: none;
   box-shadow: none;
   text-decoration: underline;
+  background-color: transparent;
 }
 .note-area-item textarea::placeholder {
   color: rgb(68, 68, 68);
@@ -676,6 +682,98 @@
 }
 .note-area-item-delete-icon button .delete-icon:hover {
   color: black;
+}
+
+.table-wrapper {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.table-container {
+  display: grid;
+  grid-auto-rows: auto;
+  gap: 1px;
+}
+
+/* Header cells */
+.table-header-cell,
+.table-cell {
+  background: white;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+}
+
+/* Title input */
+.column-title {
+  width: 100%;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 4px;
+  transition: border 0.15s ease;
+}
+
+.column-title:hover,
+.column-title:focus {
+  background: white;
+  border: 1px solid #ccc;
+}
+
+/* Textareas */
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 40px;
+  padding: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  background: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-sizing: border-box;
+  transition: border 0.15s ease;
+}
+
+textarea:hover,
+textarea:focus {
+  border: 1px solid #ccc;
+  background: white;
+}
+
+/* Add buttons */
+.add-btn {
+  color: black;
+  font-size: 1.6em;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  user-select: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #c8f5d7;
+}
+
+.empty {
+  background-color: transparent;
+  border: none;
 }
 
 * {
