@@ -1,70 +1,24 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTableContext } from '../../Context/ElementContext/TableContext';
+import type { TableObjectType } from '../../Context/ElementContext/TableContext';
 
-type TableColumn = {
-  id: string;
-  title: string;
+type TableProps = {
+  table: TableObjectType;
 };
 
-type TableRow = {
-  id: string;
-  title: string;
-  cells: Record<string, string>;
-};
-
-let colCount = 2;
-let rowCount = 2;
-
-export default function Table() {
-  const [columns, setColumns] = useState<TableColumn[]>([
-    { id: 'col1', title: 'Title 1' },
-    // { id: 'col2', title: 'Title 2' },
-  ]);
-
-  const [rows, setRows] = useState<TableRow[]>([
-    {
-      id: 'row1',
-      title: 'Row 1',
-      cells: { col1: 'Alice', col2: '23' },
-    },
-    // {
-    //   id: 'row2',
-    //   title: 'Row 2',
-    //   cells: { col1: 'Bob', col2: '30' },
-    // },
-  ]);
-
+export default function Table({ table }: TableProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const addColumn = () => {
-    colCount++;
-    const newColId = `col${colCount}`;
-    const newColumn: TableColumn = {
-      id: newColId,
-      title: `Title ${colCount}`,
-    };
-    setColumns((prev) => [...prev, newColumn]);
+  const tableStore = useTableContext();
+  const updateCell = tableStore.getState().updateCell;
+  const updateColumnTitle = tableStore.getState().updateColumnTitle;
+  const addColumn = tableStore((state) => state.addColumn)
+  const addRow = tableStore((state) => state.addRow)
+  const deleteColumn = tableStore((state) => state.deleteColumn)
+  const deleteRow = tableStore((state) => state.deleteRow)
 
-    setRows((prevRows) =>
-      prevRows.map((row) => ({
-        ...row,
-        cells: { ...row.cells, [newColId]: '' },
-      }))
-    );
-  };
-
-  const addRow = () => {
-    rowCount++;
-    const newRow: TableRow = {
-      id: `row${rowCount}`,
-      title: `Row ${rowCount}`,
-      cells: columns.reduce((acc, col) => {
-        acc[col.id] = '';
-        return acc;
-      }, {} as Record<string, string>),
-    };
-    setRows((prev) => [...prev, newRow]);
-  };
+  const { id: tableObjectId, parentTableId, columns, row: rows } = table;
 
   const handleCellChange = (
     rowId: string,
@@ -77,28 +31,20 @@ export default function Table() {
       textarea.style.height = textarea.scrollHeight + 'px';
     }
 
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === rowId
-          ? { ...row, cells: { ...row.cells, [colId]: value } }
-          : row
-      )
-    );
+    updateCell(parentTableId, tableObjectId, rowId, colId, value);
   };
 
   const handleColumnTitleChange = (colId: string, newTitle: string) => {
-    setColumns((prev) =>
-      prev.map((col) =>
-        col.id === colId ? { ...col, title: newTitle } : col
-      )
-    );
+    updateColumnTitle(parentTableId, tableObjectId, colId, newTitle);
   };
+
 
   return (
     <div className="table-wrapper">
       <motion.div
         className="table-container"
         style={{
+          display: 'grid',
           gridTemplateColumns: `${columns.map(() => 'minmax(80px, auto)').join(' ')} 40px`,
         }}
         onHoverStart={() => setIsHovered(true)}
@@ -107,6 +53,7 @@ export default function Table() {
         {/* Header */}
         {columns.map((col) => (
           <div key={col.id} className="table-header-cell">
+          <button className='table-delete-btn' onClick={() => deleteColumn(parentTableId, table.id, col.id)}>x</button>
             <input
               type="text"
               value={col.title}
@@ -117,7 +64,7 @@ export default function Table() {
         ))}
         <motion.div
           className="table-header-cell add-btn"
-          onClick={addColumn}
+          onClick={() => addColumn(parentTableId, tableObjectId)}
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}
@@ -127,8 +74,11 @@ export default function Table() {
 
         {/* Rows */}
         {rows.map((row) =>
-          columns.map((col) => (
+          columns.map((col, colIndex) => (
             <div key={`${row.id}-${col.id}`} className="table-cell">
+              {colIndex === 0 && (
+                <button className='table-delete-btn' onClick={() => deleteRow(parentTableId, table.id, row.id)}>x</button>
+              )}
               <textarea
                 value={row.cells[col.id]}
                 onChange={(e) =>
@@ -141,16 +91,18 @@ export default function Table() {
           )
         )}
 
+
         {/* Add Row Button */}
         <motion.div
           className="table-cell add-btn"
-          onClick={addRow}
+          onClick={() => addRow(parentTableId, tableObjectId)}
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}
         >
           +
         </motion.div>
+
         {columns.slice(1).map((col) => (
           <div key={col.id} className="table-cell empty" />
         ))}

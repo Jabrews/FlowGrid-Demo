@@ -6,7 +6,7 @@ export default function DroppableItemList() {
       <DraggableItem id='Timer' type='Timer'/>
       <DraggableItem id='Tracker' type='Tracker'/>
       <DraggableItem id='Note-List' type='Note-List' />
-      <DraggableItem id='Table' type='Table' />
+      <DraggableItem id='Table-List' type='Table-List' />
     </div>
     
   );

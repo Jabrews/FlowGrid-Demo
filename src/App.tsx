@@ -9,11 +9,6 @@ import { TimerMenuContextProvider } from "./components/Context/TrackerMenusConte
 // leader line context
 import { ConnectionLinesContextProvider } from "./components/Context/ConnectionLines/ConnectionLines";
 
-// component contexts 
-import { NoteListContextProvider } from "./components/Context/ElementContext/NoteListContext";
-import { TableContextProvider} from './components/Context/ElementContext/TableContext'
-
-
 export default function App() {
 
   return (
@@ -21,11 +16,7 @@ export default function App() {
       <TimerMenuContextProvider>
           <PairFactoryyProvider>
             <ConnectionLinesContextProvider>
-              <NoteListContextProvider>
-              <TableContextProvider>
                 <Editor/>
-              </TableContextProvider>
-              </NoteListContextProvider>
             </ConnectionLinesContextProvider>
           </PairFactoryyProvider>
         </TimerMenuContextProvider>

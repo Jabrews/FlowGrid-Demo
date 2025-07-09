@@ -8,7 +8,7 @@ import Tracker from '../Tracker/Tracker';
 import NoteList from '../Note/NoteList';
 import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
-import Table from '../Table/Table'
+import TableList from '../Table/TableList'
 
 import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext'
 
@@ -23,6 +23,10 @@ import { useConnectionLinesContext } from '../../Context/ConnectionLines/Connect
 
 // Delete Element Modal Context
 import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
+
+// table context
+import {TableContextProvider} from '../../Context/ElementContext/TableContext' 
+import {NoteListContextProvider} from '../../Context/ElementContext/NoteListContext'
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -218,10 +222,18 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
             {/* Dynamically render components and pass item.id to Timer */}
             {item.type === 'Timer' && <Timer id={item.id} />}
             {item.type === 'Tracker' && <Tracker id={item.id} />}
-            {item.type === 'Note-List' &&  <NoteList id={item.id} />}
-            {item.type === 'Table' && <Table id={item.id} />}
+            {item.type === 'Note-List' &&  
+              <NoteListContextProvider>
+                <NoteList id={item.id} />
+              </NoteListContextProvider> 
+            }
+            {item.type === 'Table-List' && 
+              <TableContextProvider>
+                <TableList id={item.id} />
+              </TableContextProvider>              
+            }
           
-            {!['Timer', 'Tracker', 'Chart', 'Note-List', 'Table'].includes(item.type) && <p>Unknown component</p>}
+            {!['Timer', 'Tracker', 'Chart', 'Note-List', 'Table-List'].includes(item.type) && <p>Unknown component</p>}
 
             {/* Only trackable items get the Input/Output */}
             {item.trackable && (
