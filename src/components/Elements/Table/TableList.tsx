@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTableContext } from '../../Context/ElementContext/TableContext';
+import { useTableContext } from '../../../Context/ElementContext/TableContext';
 
 // components
 import Table from './Table';

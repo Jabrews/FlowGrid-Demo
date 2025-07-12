@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTableContext } from '../../Context/ElementContext/TableContext';
-import type { TableObjectType } from '../../Context/ElementContext/TableContext';
+import { useTableContext } from '../../../Context/ElementContext/TableContext';
+import type { TableObjectType } from '../../../Context/ElementContext/TableContext';
 
 type TableProps = {
   table: TableObjectType;

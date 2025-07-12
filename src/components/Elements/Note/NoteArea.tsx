@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import { motion } from 'framer-motion';
-import { useNoteListContext } from '../../Context/ElementContext/NoteListContext';
-import type { NoteAreaItemType} from '../../Context/ElementContext/NoteListContext';
+import { useNoteListContext } from '../../../Context/ElementContext/NoteListContext';
+import type { NoteAreaItemType} from '../../../Context/ElementContext/NoteListContext';
 import NoteAreaitem from './NoteAreaItem';
 
 type NoteAreaProps = {

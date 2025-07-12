@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext'
-import type { connectedMenuItem } from '../../Context/TrackerMenusContext/TimerMenuContext'
+import { useTimerMenuContext } from '../../../Context/TrackerMenusContext/TimerMenuContext'
+import type { connectedMenuItem } from '../../../Context/TrackerMenusContext/TimerMenuContext'
 // pair context
-import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext'
+import { usePairFactoryContext } from '../../../Context/PairFactory/PairFactoryContext'
 
 // tracker menus / components
 import TrackerTimerMenu from "./TrackerMenus/TrackerTimerMenu"
 
 // connection line context
-import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines'
+import { useConnectionLinesContext } from '../../../Context/ConnectionLines/ConnectionLines'
 
 type TrackerProps = {
     id: string;

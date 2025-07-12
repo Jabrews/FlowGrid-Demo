@@ -1,6 +1,6 @@
 import {motion} from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { useTimeoutModalContext } from '../../Context/Modals/TimeoutModalContext';
+import { useTimeoutModalContext } from '../../../Context/Modals/TimeoutModalContext';
 
 
 

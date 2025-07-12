@@ -1,7 +1,7 @@
 import {motion} from 'framer-motion'
-import { useConnectionToggleModalStore } from '../../Context/Modals/ConnectionToggleModalContext';
-import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
-import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
+import { useConnectionToggleModalStore } from '../../../Context/Modals/ConnectionToggleModalContext';
+import { usePairFactoryContext } from '../../../Context/PairFactory/PairFactoryContext';
+import { useConnectionLinesContext } from '../../../Context/ConnectionLines/ConnectionLines';
 import { useEffect } from 'react';
 
 

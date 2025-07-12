@@ -1,13 +1,13 @@
 // components
 import Editor from "./components/Elements/Editor/Editor";
-import { ItemFactoryProvider } from "./components/Context/ItemFactory/ItemFactoryContext";
-import { PairFactoryyProvider } from "./components/Context/PairFactory/PairFactoryContext";
+import { ItemFactoryProvider } from "./Context/ItemFactory/ItemFactoryContext";
+import { PairFactoryyProvider } from "./Context/PairFactory/PairFactoryContext";
 
 // timer menu context
-import { TimerMenuContextProvider } from "./components/Context/TrackerMenusContext/TimerMenuContext";
+import { TimerMenuContextProvider } from ".//Context/TrackerMenusContext/TimerMenuContext";
 
 // leader line context
-import { ConnectionLinesContextProvider } from "./components/Context/ConnectionLines/ConnectionLines";
+import { ConnectionLinesContextProvider } from "./Context/ConnectionLines/ConnectionLines";
 
 export default function App() {
 

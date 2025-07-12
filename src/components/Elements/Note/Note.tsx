@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { useNoteListContext } from '../../Context/ElementContext/NoteListContext';
+import { useNoteListContext } from '../../../Context/ElementContext/NoteListContext';
 
 // components
 import NoteArea from './NoteArea';

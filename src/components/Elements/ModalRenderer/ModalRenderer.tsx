@@ -1,9 +1,9 @@
-import { useConnectionToggleModalStore } from "../../Context/Modals/ConnectionToggleModalContext"
+import { useConnectionToggleModalStore } from "../../../Context/Modals/ConnectionToggleModalContext"
 import ConnectionToggleModal from "../Modals/ConnectionToggleModal"
 import TimeoutModel from "../Modals/TimeoutModel"
-import { useTimeoutModalContext } from "../../Context/Modals/TimeoutModalContext"
+import { useTimeoutModalContext } from "../../../Context/Modals/TimeoutModalContext"
 import DeleteElementModel from "../Modals/DeleteElementModel"
-import { useDeleteElementModalContext } from "../../Context/Modals/DeleteElementModalContext"
+import { useDeleteElementModalContext } from "../../../Context/Modals/DeleteElementModalContext"
 
 
 export default function ModalRenderer() {

@@ -8,12 +8,10 @@ import ModalRenderer from '../ModalRenderer/ModalRenderer';
 import FakeCursor from '../FakeCursor/FakeCursor';
 
 // contexts
-import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
-import { useViewportPanStore } from '../../Context/ViewportPan/ViewportPanContext';
-import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
+import { useConnectionLinesContext } from '../../../Context/ConnectionLines/ConnectionLines';
+import { useViewportPanStore } from '../../../Context/ViewportPan/ViewportPanContext';
+import { useItemFactoryContext } from '../../../Context/ItemFactory/ItemFactoryContext';
 
-// component contexts
-import { NoteListContextProvider } from '../../Context/ElementContext/NoteListContext';
 
 export default function Whiteboard() {
   const droppedItemStore = useItemFactoryContext()
@@ -142,7 +140,7 @@ const localWhiteboardRef = useRef<HTMLDivElement | null>(null);
           display: 'inline-block',
           width: '2000px',
           height: '2000px',
-          background: 'grey',
+          // background: 'grey',
           overflow : 'none'
         }}
         className="droppable-div"

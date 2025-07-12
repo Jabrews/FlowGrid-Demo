@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
+import { useDeleteElementModalContext } from '../../../Context/Modals/DeleteElementModalContext';
 
 
 // context for deleting elements
-import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
-import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
-import { useTimerMenuContext } from '../../Context/TrackerMenusContext/TimerMenuContext';
-import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
+import { usePairFactoryContext } from '../../../Context/PairFactory/PairFactoryContext';
+import { useItemFactoryContext } from '../../../Context/ItemFactory/ItemFactoryContext';
+import { useTimerMenuContext } from '../../../Context/TrackerMenusContext/TimerMenuContext';
+import { useConnectionLinesContext } from '../../../Context/ConnectionLines/ConnectionLines';
 
 export default function DeleteElementModel() {
 

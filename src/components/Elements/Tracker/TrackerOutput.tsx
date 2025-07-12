@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
-import { useConnectionToggleModalStore } from '../../Context/Modals/ConnectionToggleModalContext';
-import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
+import { useConnectionToggleModalStore } from '../../../Context/Modals/ConnectionToggleModalContext';
+import { usePairFactoryContext } from '../../../Context/PairFactory/PairFactoryContext';
 
 type TrackerOutputProps = {
   parentElementId: string;

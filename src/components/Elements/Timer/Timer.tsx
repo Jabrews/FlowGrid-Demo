@@ -2,8 +2,8 @@ import { useTimer } from 'react-timer-hook';
 import { useState, useEffect, useRef } from 'react';
 import ProgressBar from './ProgressBar';
 
-import { useTimerMenuContext}from '../../Context/TrackerMenusContext/TimerMenuContext';
-import { useTimeoutModalContext } from '../../Context/Modals/TimeoutModalContext';
+import { useTimerMenuContext}from '../../../Context/TrackerMenusContext/TimerMenuContext';
+import { useTimeoutModalContext } from '../../../Context/Modals/TimeoutModalContext';
 
 
 

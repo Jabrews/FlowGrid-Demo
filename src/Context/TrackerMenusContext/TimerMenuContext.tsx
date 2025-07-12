@@ -5,7 +5,7 @@ import { create } from "zustand";
 import type { DroppedItem } from "../ItemFactory/ItemFactoryContext";
 
 // create local storage item
-import {addTimerPairToLocalStorage, saveTimerPairsToLocalStorage} from "../../Elements/LocalStorage/TimerPairLocalStorage";
+import {addTimerPairToLocalStorage, saveTimerPairsToLocalStorage} from "../../components/Elements/LocalStorage/TimerPairLocalStorage";
 
 
 

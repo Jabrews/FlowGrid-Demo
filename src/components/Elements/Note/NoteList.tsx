@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // components
-import type { NoteObject } from '../../Context/ElementContext/NoteListContext';
+import type { NoteObject } from '../../../Context/ElementContext/NoteListContext';
 import Note from './Note';
 
 // Zustand store
-import { useNoteListContext } from '../../Context/ElementContext/NoteListContext';
+import { useNoteListContext } from '../../../Context/ElementContext/NoteListContext';
 
 type NoteListProps = {
   id: string;

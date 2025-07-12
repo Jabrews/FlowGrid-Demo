@@ -10,23 +10,23 @@ import TrackerOutput from '../Tracker/TrackerOutput';
 import TrackerInput from '../Tracker/TrackerInput';
 import TableList from '../Table/TableList'
 
-import type { DroppedItem } from '../../Context/ItemFactory/ItemFactoryContext'
+import type { DroppedItem } from '../../../Context/ItemFactory/ItemFactoryContext'
 
 // Item Factory
-import { useItemFactoryContext } from '../../Context/ItemFactory/ItemFactoryContext';
+import { useItemFactoryContext } from '../../../Context/ItemFactory/ItemFactoryContext';
 
 // Connected Item Factory
-import { usePairFactoryContext } from '../../Context/PairFactory/PairFactoryContext';
+import { usePairFactoryContext } from '../../../Context/PairFactory/PairFactoryContext';
 
 // Line Store
-import { useConnectionLinesContext } from '../../Context/ConnectionLines/ConnectionLines';
+import { useConnectionLinesContext } from '../../../Context/ConnectionLines/ConnectionLines';
 
 // Delete Element Modal Context
-import { useDeleteElementModalContext } from '../../Context/Modals/DeleteElementModalContext';
+import { useDeleteElementModalContext } from '../../../Context/Modals/DeleteElementModalContext';
 
 // table context
-import {TableContextProvider} from '../../Context/ElementContext/TableContext' 
-import {NoteListContextProvider} from '../../Context/ElementContext/NoteListContext'
+import {TableContextProvider} from '../../../Context/ElementContext/TableContext' 
+import {NoteListContextProvider} from '../../../Context/ElementContext/NoteListContext'
 
 type WhiteboardGridProps = {
   gridMargin: [number, number];
@@ -173,18 +173,18 @@ export default function WhiteboardGrid({ gridMargin }: WhiteboardGridProps) {
     minHeight: '100%', // makes sure it's tall
     overflow: 'none',
     position: 'relative',
-    background: 'grey',
+    // background: 'grey',
     }}
+    className='grid-container-styling'
     ref={localWhiteboardGridRef} 
     >
     <GridLayout
       layout={layout}
       compactType={null}
       cols={24}
-      rowHeight={250}
+      rowHeight={30}
       width={3000}
       margin={gridMargin}
-      preventCollision={true}
       draggableHandle=".drag-handle"
       isResizable={false}
       useCSSTransforms={false}

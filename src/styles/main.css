@@ -79,11 +79,11 @@
   }
 }
 .whiteboard {
-  background-color: grey;
   width: 200%;
   height: 100vh;
-  border: 1px solid #ccc;
   overflow: scroll;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 4.8em 4.8em; /* column width x row height */
 }
 .whiteboard .whiteboard-item {
   margin: 0.5em;
@@ -118,6 +118,13 @@
 }
 .item-header .drag-handle:hover {
   color: white;
+}
+
+.react-grid-item .react-grid-placeholder {
+  background: rgba(0, 128, 255, 0.3);
+  border: 2px dashed #0080ff;
+  border-radius: 4px;
+  transition: none;
 }
 
 .center-modal {
@@ -835,7 +842,7 @@ html {
   font-size: 16px;
   font-family: "Inter", sans-serif;
   line-height: 1.5;
-  color: #0e0e0e;
+  color: #000000;
 }
 
 a {
@@ -848,7 +855,7 @@ ul, ol {
 }
 
 body {
-  background-color: #4d4d4d;
+  background-color: #aaaaaa;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;

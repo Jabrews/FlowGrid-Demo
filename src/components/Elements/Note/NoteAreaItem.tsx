@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import type { NoteAreaItemType } from "../../Context/ElementContext/NoteListContext";
-import { useNoteListContext } from "../../Context/ElementContext/NoteListContext";
+import type { NoteAreaItemType } from "../../../Context/ElementContext/NoteListContext";
+import { useNoteListContext } from "../../../Context/ElementContext/NoteListContext";
 import { FaXmark } from "react-icons/fa6";
 
 type Props = {
