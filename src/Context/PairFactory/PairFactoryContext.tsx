@@ -35,7 +35,7 @@ const createPairFactoryStore = (
     connectedItem: null,
 
     addConnectedTracker: (trackerId: string) => {
-      const droppedItems = getDroppedItems();
+      const droppedItems = Object.values(getDroppedItems());
       const item = droppedItems.find(
         (item) => item.id === trackerId && item.tracker === true
       );
@@ -45,10 +45,10 @@ const createPairFactoryStore = (
     },
 
     addConnectedItem: (itemId: string) => {
-      const droppedItems = getDroppedItems();
+      const droppedItems = Object.values(getDroppedItems());
       const item = droppedItems.find(
         (item) => item.id === itemId && item.trackable === true
-      );
+    );
       set((state) => ({
         connectedItem: item || state.connectedItem,
       }));

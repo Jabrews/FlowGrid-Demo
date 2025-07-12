@@ -1,27 +1,18 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useRef } from "react";
 import { create } from "zustand";
 import type { RefObject } from "react";
 
-// dropped item types
+// types
 export type DroppedItem = {
   id: string;
   type: string;
   trackable: boolean;
   tracker: boolean;
   connected: boolean;
-  placementPos : {x : number, y : number}
+  placementPos: { x: number; y: number };
 };
 
-export type DroppedItemRect = {
-  bottom: number;
-  left: number;
-  right: number;
-  top: number;
-  height: number;
-  width: number;
-};
-
-export type DroppedMousePos = {x : number,  y : number}
+export type DroppedMousePos = { x: number; y: number };
 
 export type IOBundleItem = {
   portType: string;
@@ -30,111 +21,136 @@ export type IOBundleItem = {
 };
 
 type ItemFactoryStore = {
-  droppedItems: DroppedItem[];
+  droppedItems: Record<string, DroppedItem>;
   IOBundle: IOBundleItem[];
 
-  addDroppedItem: (newItem: DroppedItem) => void;
+  addDroppedItem: (item: DroppedItem) => void;
   removeDroppedItem: (id: string) => void;
+  updateDroppedItemPosition: (id: string, pos: { x: number; y: number }) => void;
 
   whiteboardRef: RefObject<HTMLDivElement | null> | null;
   setWhiteboardRef: (ref: RefObject<HTMLDivElement | null>) => void;
 
-  whiteboardGridRef : RefObject<HTMLDivElement | null> | null;
-  setWhiteboardGridRef : (ref: RefObject<HTMLDivElement | null>) => void
-  
-  userAddingItem : boolean,
-  toggleUserAddingItem : (toggleStatus : boolean) => void
+  whiteboardGridRef: RefObject<HTMLDivElement | null> | null;
+  setWhiteboardGridRef: (ref: RefObject<HTMLDivElement | null>) => void;
 
-  itemDroppedMousePos : DroppedMousePos
-  setItemDroppedMousePos : (newPos : DroppedMousePos) => void
+  userAddingItem: boolean;
+  toggleUserAddingItem: (v: boolean) => void;
 
-  calcRelativeMousePos : () => {x: number, y : number} 
+  itemDroppedMousePos: DroppedMousePos;
+  setItemDroppedMousePos: (pos: DroppedMousePos) => void;
+
+  calcRelativeMousePos: () => { x: number; y: number };
 
   gridMargin: [number, number];
   updateGridMarginFromWindow: () => void;
-
-
 };
 
+// --- zustand store factory
 const createItemFactoryStore = () =>
-  create<ItemFactoryStore>((set, get) => ({
-    droppedItems: [],
-    IOBundle: [],
+  create<ItemFactoryStore>((set, get) => {
+    const saved = localStorage.getItem("droppedItems");
+    const initialItems = saved ? JSON.parse(saved) : {};
 
-    addDroppedItem: (newItem) =>
-      set((state) => ({
-        droppedItems: [...state.droppedItems, newItem],
-      })),
+    const store: ItemFactoryStore = {
+      droppedItems: initialItems,
+      IOBundle: [],
 
-    removeDroppedItem: (id) =>
-      set((state) => ({
-        droppedItems: state.droppedItems.filter((item) => item.id !== id),
-      })),
+      addDroppedItem: (item) =>
+        set((state) => {
+          const updated = {
+            ...state.droppedItems,
+            [item.id]: item,
+          };
+          localStorage.setItem("droppedItems", JSON.stringify(updated));
+          return { droppedItems: updated };
+        }),
 
-    whiteboardRef: null,
-    setWhiteboardRef: (ref) => set({ whiteboardRef: ref }),
+      removeDroppedItem: (id) =>
+        set((state) => {
+          const updated = { ...state.droppedItems };
+          delete updated[id];
+          localStorage.setItem("droppedItems", JSON.stringify(updated));
+          return { droppedItems: updated };
+        }),
 
-    userAddingItem : false,
-    toggleUserAddingItem: (value: boolean) =>
-      set(() => ({ userAddingItem: value })),
+      updateDroppedItemPosition: (id, pos) =>
+        set((state) => {
+          const item = state.droppedItems[id];
+          if (!item) return {};
+          const updated = {
+            ...state.droppedItems,
+            [id]: { ...item, placementPos: pos },
+          };
+          localStorage.setItem("droppedItems", JSON.stringify(updated));
+          return { droppedItems: updated };
+        }),
 
-    itemDroppedMousePos: { x: 0, y: 0 }, // placeholder
-    setItemDroppedMousePos: (newPos: DroppedMousePos) =>
-      set(() => ({ itemDroppedMousePos: newPos })),
+      whiteboardRef: null,
+      setWhiteboardRef: (ref) => set({ whiteboardRef: ref }),
 
-    calcRelativeMousePos: () => {
-    const whiteboard = get().whiteboardGridRef?.current;
-    const mousePos = get().itemDroppedMousePos;
+      whiteboardGridRef: null,
+      setWhiteboardGridRef: (ref) => set({ whiteboardGridRef: ref }),
 
-    if (!whiteboard) return { x: 0, y: 0 };
+      userAddingItem: false,
+      toggleUserAddingItem: (v) => set({ userAddingItem: v }),
 
-    const scrollLeft = whiteboard.scrollLeft;
-    const scrollTop = whiteboard.scrollTop;
+      itemDroppedMousePos: { x: 0, y: 0 },
+      setItemDroppedMousePos: (pos) => set({ itemDroppedMousePos: pos }),
 
-    const offsetX = mousePos.x + scrollLeft - whiteboard.getBoundingClientRect().left;
-    const offsetY = mousePos.y + scrollTop - whiteboard.getBoundingClientRect().top;
+      calcRelativeMousePos: () => {
+        const whiteboard = get().whiteboardGridRef?.current;
+        const mousePos = get().itemDroppedMousePos;
 
-    // now divide by column size
-    const colWidth = 75;
-    const rowHeight = 250;
-    const marginX = get().gridMargin[0];
-    const marginY = get().gridMargin[1];
+        if (!whiteboard) return { x: 0, y: 0 };
 
-    const gridX = Math.floor((offsetX + marginX / 2) / (colWidth + marginX));
-    const gridY = Math.floor((offsetY + marginY / 2) / (rowHeight + marginY));
+        const rect = whiteboard.getBoundingClientRect();
+        const scrollLeft = whiteboard.scrollLeft;
+        const scrollTop = whiteboard.scrollTop;
+        // const zoom = window.devicePixelRatio || 1;
 
-return { x: gridX, y: gridY };
+        const offsetX = (mousePos.x - rect.left + scrollLeft) ; // /zoom
+        const offsetY = (mousePos.y - rect.top + scrollTop) ;
 
+        const colWidth = 125;
+        const rowHeight = 5;
+        const [marginX, marginY] = get().gridMargin;
+
+        const gridX = Math.floor((offsetX + marginX / 2) / (colWidth + marginX));
+        const gridY = Math.floor((offsetY + marginY / 2) / (rowHeight + marginY));
+
+        return { x: gridX, y: gridY };
 
     },
-    whiteboardGridRef : null,
-    setWhiteboardGridRef : (ref) => set({whiteboardGridRef : ref}),
-    gridMargin: [100, 150], 
-
-    updateGridMarginFromWindow: () => {
-      const isMobile = window.innerWidth < 768;
-      const newMargin: [number, number] = isMobile ? [50, 135] : [70, 155];
-      set(() => ({ gridMargin: newMargin }));
-    },
 
 
+      gridMargin: [100, 150],
+      updateGridMarginFromWindow: () => {
+        const isMobile = window.innerWidth < 768;
+        const newMargin: [number, number] = isMobile ? [50, 135] : [70, 155];
+        set({ gridMargin: newMargin });
+      },
+    };
 
-  }));
+    return store;
+  });
 
-// context
+// --- context setup
 const ItemFactoryContext = createContext<ReturnType<typeof createItemFactoryStore> | null>(null);
 
-// provider
 export const ItemFactoryProvider = ({ children }: { children: React.ReactNode }) => {
-  const store = createItemFactoryStore();
+  const storeRef = useRef<ReturnType<typeof createItemFactoryStore>>();
+  if (!storeRef.current) {
+    storeRef.current = createItemFactoryStore();
+  }
+
   return (
-    <ItemFactoryContext.Provider value={store}>
+    <ItemFactoryContext.Provider value={storeRef.current}>
       {children}
     </ItemFactoryContext.Provider>
   );
 };
 
-// hook
 export const useItemFactoryContext = () => {
   const store = useContext(ItemFactoryContext);
   if (!store) throw new Error("useItemFactoryContext must be used inside ItemFactoryProvider");

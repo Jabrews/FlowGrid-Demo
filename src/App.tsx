@@ -1,5 +1,5 @@
 // components
-import Editor from "./components/Elements/Editor/Editor";
+import Editor from "./Components/Elements/Editor/Editor";
 import { ItemFactoryProvider } from "./Context/ItemFactory/ItemFactoryContext";
 import { PairFactoryyProvider } from "./Context/PairFactory/PairFactoryContext";
 
