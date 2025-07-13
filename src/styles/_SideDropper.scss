@@ -3,13 +3,15 @@
 .side-dropper-container {
   z-index: 1000;
   position: absolute;
-  left: 0;
   top: 0;
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
   align-items: center;
   justify-items: flex-start;
+  background-color: rgba(136, 156, 154, 0.6);
+  box-sizing: content-box;
+  padding-right: 0.2em;
 
   .side-dropper-header {
     width: 100%;
@@ -17,10 +19,15 @@
     grid-template-columns: 1fr auto;
     justify-items: center;
     align-items: center;
-    background-color: rgb(148, 20, 20);
+    background-color: #737e7d;
 
+    .side-dropper-symbol { 
+      padding: 0em;
+      margin: 0em;
+      margin-top: 0.2em;
+    }
+    
     .close-icon {
-      padding : 0.3em;
       margin-left: 5em;
       cursor: pointer;
     }
@@ -28,19 +35,29 @@
     .close-icon:hover {
       color: rgb(54, 54, 54);
     }
+
+
+    .side-dropper-title {
+      word-wrap: break-word;
+      margin-left: 0;
+    }
+
   }
 
   .side-dropper-content {
     height: 100%;
     width: 100%;
     display: block;
-    background-color: rgb(230, 25, 25);
+    background-color: rgba(136, 156, 154, 0.8);
     overflow-x: hidden;
 
   }
 
   /* collapsed state */
   &.active {
+
+
+
     .side-dropper-header {
       grid-template-columns: 1fr 1fr;
     }
@@ -67,29 +84,102 @@
       margin-left: 0;
     }
   }
+
+  
+
 }
 
 /* Item Grid Styling */
 
 .drop-item-list-container {
-  height: 90%;
   display: grid;
-  margin: 1em;
-  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr, auto;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.side-dropper-buttons-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+
+  .close-list-btn {
+    background-color: #B3E3D2;
+  }
+
+  .workshop-btn {
+    background: linear-gradient(to bottom, #B3E3D2, #466D89);
+  }
+
+  button {
+    font-weight: 600;
+    font-size: 0.8em;
+    width : fit-content;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    height : 3em;
+    border-radius: 5em;
+    border: none;
+    
+    &:hover {
+      filter: brightness(0.9); /* slightly darker */
+    }
+
+  }
+}
+
+.drop-item-list-header {
+  display: flex;
+  flex-direction: row;
+  background-color: #E2E2E2;
+
+  p {
+   align-self: flex-start;
+   justify-self: flex-start;
+   margin-left: 0.2em;
+   font-weight: 500;
+  }
+
+  button {
+    align-self: center;
+    justify-self: center;
+    margin-left: auto; /* pushes button to the right */
+    margin-right: 0.2em;
+    border: none;
+    font-weight: 800;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: transparent;
+  }
+}
+
+.drop-item-list {
+  background-color: #CCCCCC;
+  height: 18em;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items:flex-start;
   justify-content: center;
   text-align: center;
   overflow-y: scroll;
   overflow-x: hidden;
 
   .drop-list-child {
+    margin: 1em;
     cursor: pointer;
-    display: grid;
     grid-template-rows: 1fr 1fr;
-    align-items: flex-end;
+    align-items: center;
     justify-items: center;
 
+    &:hover {
+      background-color: #b6b5b5;
+    }
+
     p {
+      align-self: flex-end;
       user-select: none;
       cursor: pointer;
     }
@@ -111,6 +201,7 @@
   }
 
   .side-dropper-container {
+    justify-self: center;
     height : auto;
     top : 0;
     left: 0;
@@ -119,7 +210,19 @@
     .side-dropper-header {
       width : 2em;
       justify-self: center;
+
+      .side-dropper-title {
+        justify-self: first baseline;
+        margin-left: 0.6em;
+      }
+
     }
+
+    &:active {
+      width: 100%;
+      margin: 0;
+    }
+
   }
 
   .drop-item-list-container {
@@ -128,8 +231,19 @@
     overflow-x: hidden;
   }
 
+  .drop-item-list-header {
+    height: fit-content;
+  
+    
+
+  }
+
   .side-dropper-container.active {
     align-items: first baseline;
+    width: 100%;
+    margin: 0;
+
+
   .side-dropper-header {
     font-size: 0.8em;
     width : 100%;
@@ -149,7 +263,7 @@
 
   .side-dropper-content {
     height : 35vh;
-    background: rgba(255, 0, 0, 0.356); /* Delete Debugging */
+
 
 
 

@@ -1,0 +1,28 @@
+/* Scrollbar for sidedropper list */
+
+
+
+::-webkit-scrollbar {
+width: 4px;           /* vertical scrollbar */
+height: 4px;          /* horizontal scrollbar */
+}
+
+/* Track (background) */
+::-webkit-scrollbar-track {
+background: transparent;
+border-radius: 4px;
+}
+
+/* Thumb (the draggable handle) */
+::-webkit-scrollbar-thumb {
+background: #301313;
+border-radius: 4px;
+}
+
+/* On hover */
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+
+
+
